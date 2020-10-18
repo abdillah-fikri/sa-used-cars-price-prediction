@@ -31,21 +31,26 @@ from lightgbm import LGBMRegressor
 from sklearn import metrics
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
-from sklearn.model_selection import (GridSearchCV, KFold, RandomizedSearchCV,
-                                     cross_val_score, cross_validate,
-                                     train_test_split)
+from sklearn.model_selection import (
+    GridSearchCV,
+    KFold,
+    RandomizedSearchCV,
+    cross_val_score,
+    cross_validate,
+    train_test_split,
+)
 from sklearn.tree import DecisionTreeRegressor
 from utils import *
 from xgboost import XGBRegressor
 
 # %%
 # set seaborn default style
-sns.set(style='darkgrid', palette='muted')
+sns.set(style="darkgrid", palette="muted")
 
 # %%
 # Import data
-df = pd.read_csv('../data/raw/used_car_data.csv')
-print('Shape:', df.shape)
+df = pd.read_csv("../data/raw/used_car_data.csv")
+print("Shape:", df.shape)
 df.head()
 
 # %%
@@ -58,33 +63,53 @@ null_checker(df)
 
 # %%
 # Extrack features
-df['Brand'] = df['Name'].apply(lambda x: x.split(' ')[0])
-df['Series'] = df['Name'].apply(lambda x: x.split(' ')[1])
-df.drop(columns='Name', inplace=True)
+df["Brand"] = df["Name"].apply(lambda x: x.split(" ")[0])
+df["Series"] = df["Name"].apply(lambda x: x.split(" ")[1])
+df.drop(columns="Name", inplace=True)
 
 # %%
 # Check features unit
-print('Satuan pada feature Mileage:', df['Mileage'].apply(lambda x: x if pd.isna(x) else x.split(' ')[1]).unique())
-print('Satuan pada feature Engine:', df['Engine'].apply(lambda x: x if pd.isna(x) else x.split(' ')[1]).unique())
-print('Satuan pada feature Power:', df['Power'].apply(lambda x: x if pd.isna(x) else x.split(' ')[1]).unique())
+print(
+    "Satuan pada feature Mileage:",
+    df["Mileage"].apply(lambda x: x if pd.isna(x) else x.split(" ")[1]).unique(),
+)
+print(
+    "Satuan pada feature Engine:",
+    df["Engine"].apply(lambda x: x if pd.isna(x) else x.split(" ")[1]).unique(),
+)
+print(
+    "Satuan pada feature Power:",
+    df["Power"].apply(lambda x: x if pd.isna(x) else x.split(" ")[1]).unique(),
+)
 
 # %%
 # Check invalid value
-print('Invalid Value pada feature Mileage:', pd.Series([x for x in df['Mileage'] if str(x).split(' ')[0].isalpha()]).unique())
-print('Invalid Value pada feature Engine:', pd.Series([x for x in df['Engine'] if str(x).split(' ')[0].isalpha()]).unique())
-print('Invalid Value pada feature Power:', pd.Series([x for x in df['Power'] if str(x).split(' ')[0].isalpha()]).unique())
+print(
+    "Invalid Value pada feature Mileage:",
+    pd.Series([x for x in df["Mileage"] if str(x).split(" ")[0].isalpha()]).unique(),
+)
+print(
+    "Invalid Value pada feature Engine:",
+    pd.Series([x for x in df["Engine"] if str(x).split(" ")[0].isalpha()]).unique(),
+)
+print(
+    "Invalid Value pada feature Power:",
+    pd.Series([x for x in df["Power"] if str(x).split(" ")[0].isalpha()]).unique(),
+)
 
 # %%
 # Remove features unit and convert to numeric
-df['Mileage (kmpl)'] = df['Mileage'].apply(lambda x: x if pd.isna(x) else x.split(' ')[0])
-df['Engine (CC)'] = df['Engine'].apply(lambda x: x if pd.isna(x) else x.split(' ')[0])
-df['Power (bhp)'] = df['Power'].apply(lambda x: x if pd.isna(x) else x.split(' ')[0])
+df["Mileage (kmpl)"] = df["Mileage"].apply(
+    lambda x: x if pd.isna(x) else x.split(" ")[0]
+)
+df["Engine (CC)"] = df["Engine"].apply(lambda x: x if pd.isna(x) else x.split(" ")[0])
+df["Power (bhp)"] = df["Power"].apply(lambda x: x if pd.isna(x) else x.split(" ")[0])
 
-df['Mileage (kmpl)'] = pd.to_numeric(df['Mileage (kmpl)'], errors='coerce')
-df['Engine (CC)'] = pd.to_numeric(df['Engine (CC)'], errors='coerce')
-df['Power (bhp)'] = pd.to_numeric(df['Power (bhp)'], errors='coerce')
+df["Mileage (kmpl)"] = pd.to_numeric(df["Mileage (kmpl)"], errors="coerce")
+df["Engine (CC)"] = pd.to_numeric(df["Engine (CC)"], errors="coerce")
+df["Power (bhp)"] = pd.to_numeric(df["Power (bhp)"], errors="coerce")
 
-df.drop(columns=['Mileage', 'Engine', 'Power'], inplace=True)
+df.drop(columns=["Mileage", "Engine", "Power"], inplace=True)
 
 # %%
 # Check result
@@ -96,29 +121,29 @@ df.describe()
 
 # %%
 # Check milage 0
-df[df['Mileage (kmpl)']==0]
+df[df["Mileage (kmpl)"] == 0]
 
 # %%
 # Seats 0 value
-df[df['Seats']==0]
+df[df["Seats"] == 0]
 
 # %%
 # Replace 0 value to nan
-df['Mileage (kmpl)'] = df['Mileage (kmpl)'].replace(0, np.nan)
-df['Seats'] = df['Seats'].replace(0, np.nan)
+df["Mileage (kmpl)"] = df["Mileage (kmpl)"].replace(0, np.nan)
+df["Seats"] = df["Seats"].replace(0, np.nan)
 
 # %%
 # Check unique value
-cat_cols = [col for col in df.columns if df[col].dtypes == 'object']
+cat_cols = [col for col in df.columns if df[col].dtypes == "object"]
 df[cat_cols].nunique()
 
 # %%
 for col in cat_cols:
-  print(col, df[col].unique(), '\n')
+    print(col, df[col].unique(), "\n")
 
 # %%
 # Replace duplicated value
-df['Brand'] = df['Brand'].replace('ISUZU', 'Isuzu')
+df["Brand"] = df["Brand"].replace("ISUZU", "Isuzu")
 
 # %%
 df.head()
@@ -127,7 +152,7 @@ df.head()
 df.describe()
 
 # %%
-df.describe(include=['object']) 
+df.describe(include=["object"])
 
 # %%
 null_checker(df)
