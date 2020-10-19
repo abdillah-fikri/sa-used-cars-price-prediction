@@ -1,18 +1,18 @@
 # ---
 # jupyter:
 #   jupytext:
-#     formats: notebooks//ipynb,markdown//md,scripts/preparation//py:percent
+#     formats: notebooks//ipynb,markdown//md,scripts//py:percent
 #     text_representation:
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
 #       jupytext_version: 1.6.0
 #   kernelspec:
-#     display_name: Python 3.8.6 64-bit ('venv')
+#     display_name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
 #     metadata:
 #       interpreter:
-#         hash: 6881b799b850b05580eb5c78fcf905fdcfeacf53e20d91c1f7827cafeb6d87ae
-#     name: Python 3.8.6 64-bit ('venv')
+#         hash: 0def509d864da8b5a1806818af2135cd2a80c010b2a4e961690c3f19f43c05fc
+#     name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
 # ---
 
 # %%
@@ -158,3 +158,4 @@ df.describe(include=["object"])
 null_checker(df)
 
 # %%
+df.to_csv("../data/processed/after_prep.csv", index=False)
