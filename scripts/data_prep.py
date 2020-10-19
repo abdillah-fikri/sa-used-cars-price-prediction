@@ -17,35 +17,10 @@
 
 # %%
 # Import library
-import category_encoders as ce
-import matplotlib.pyplot as plt
-import miceforest as mf
-import missingno as msno
 import numpy as np
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import seaborn as sns
-from catboost import CatBoostRegressor
-from lightgbm import LGBMRegressor
-from sklearn import metrics
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.impute import SimpleImputer
-from sklearn.model_selection import (
-    GridSearchCV,
-    KFold,
-    RandomizedSearchCV,
-    cross_val_score,
-    cross_validate,
-    train_test_split,
-)
-from sklearn.tree import DecisionTreeRegressor
-from utils import *
-from xgboost import XGBRegressor
 
-# %%
-# set seaborn default style
-sns.set(style="darkgrid", palette="muted")
+from utils import null_checker
 
 # %%
 # Import data
