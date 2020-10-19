@@ -12,7 +12,7 @@ Shift Academy - Final Project
    
 3. Notebooks
 
-   Menyipan hasil olahan dari data yang terbagi menjadi 4 bagian:
+   Menyipan hasil analisa atau olahan dari data dalam bentuk notebook yang terbagi menjadi 4 bagian:
    
    * data_prep : Data preparation sebelum dilakukan visualisasi
    * data_vis : Visualisasi dan analisa data
