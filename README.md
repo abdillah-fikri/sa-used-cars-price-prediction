@@ -1,2 +1,2 @@
-# sa-used-cars-price-prediction
+# Used Car Price Prediction
 Shift Academy - Final Project
