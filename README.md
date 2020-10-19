@@ -1,6 +1,13 @@
 # Used Car Price Prediction
 Shift Academy - Final Project
 
+Project ini dikerjakan dalam Team dengan anggota:
+1. Abdillah Fikri
+2. Kintan Pitaloka W
+3. Rizky Muhammad Kahfie
+
+## Data Structure
+
 ## Repository Structure
 1. Data
 
