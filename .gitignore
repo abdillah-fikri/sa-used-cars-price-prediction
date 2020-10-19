@@ -1,3 +1,4 @@
 /venv
 /.vscode
 /notebooks/__pycache__
+/scripts/__pycache__
