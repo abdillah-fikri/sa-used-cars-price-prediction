@@ -1,5 +1,5 @@
 # Used Car Price Prediction
-Shift Academy - Final Project
+Shift Academy - Final Project <br>
 The dataset contains 6,019 observations (cars) incorporates 3,205 diesel cars, 2,746 petrol cars, 56 CNG cars, 10 LPG cars, and 2 electric cars in India.
 
 This project is done in a team with members:
@@ -8,7 +8,7 @@ This project is done in a team with members:
 3. Rizky Muhammad Kahfie
 
 ## Data Structure
-Data Fields
+Data Fields <br>
 There are id and 12 characteristics of cars and the price.
 
 1. Name - The brand and model of the car.
@@ -25,16 +25,13 @@ There are id and 12 characteristics of cars and the price.
 12. Price - The price of the car (target).
 
 ## Repository Structure
-1. Data
-
+1. Data <br>
     Contains raw data and processed data
    
-2. Markdown
-
+2. Markdown <br>
     Contains markdown version of notebooks
    
-3. Notebooks
-
+3. Notebooks <br>
     Contains results of data analysis and processing in the form of jupyter notebook which is divided into 4 parts:
    
     * data_prep: Data preparation before visualization
@@ -42,10 +39,8 @@ There are id and 12 characteristics of cars and the price.
     * preprocessing: Preprocessing of data before modeling such as train test splits, missing values and outlier handling, categorical encoding, feature engineering, etc.
     * modeling: Model making
    
-4. Outputs
-   
+4. Outputs <br>
     Contains model result in * .pkl format
    
-5. Scripts
-   
+5. Scripts <br>
     Contains python script version of notebooks
