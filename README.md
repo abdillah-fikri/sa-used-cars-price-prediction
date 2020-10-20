@@ -8,9 +8,6 @@ This project is done in a team with members:
 3. Rizky Muhammad Kahfie
 
 ## Data Structure
-Data Fields <br>
-There are id and 12 characteristics of cars and the price.
-
 1. Name - The brand and model of the car.
 2. Location - The location in which the car is being sold or is available for purchase.
 3. Year - The year or edition of the model.
