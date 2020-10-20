@@ -1,35 +1,51 @@
 # Used Car Price Prediction
 Shift Academy - Final Project
+The dataset contains 6,019 observations (cars) incorporates 3,205 diesel cars, 2,746 petrol cars, 56 CNG cars, 10 LPG cars, and 2 electric cars in India.
 
-Project ini dikerjakan dalam Team dengan anggota:
+This project is done in a team with members:
 1. Abdillah Fikri
 2. Kintan Pitaloka W
 3. Rizky Muhammad Kahfie
 
 ## Data Structure
+Data Fields
+There are id and 12 characteristics of cars and the price.
+
+1. Name - The brand and model of the car.
+2. Location - The location in which the car is being sold or is available for purchase.
+3. Year - The year or edition of the model.
+4. Kilometers_Driven - The total kilometers are driven in the car by the previous owner(s) in KM.
+5. Fuel_Type - The type of fuel used by the car. (Petrol, Diesel, Electric, CNG, LPG)
+6. Transmission - The type of transmission used by the car. (Automatic / Manual)
+7. Owner_Type - First, Second, Third, or Fourth & Above
+8. Mileage - The standard mileage offered by the car company in kmpl or km/kg
+9. Engine - The displacement volume of the engine in CC.
+10. Power - The maximum power of the engine in bhp.
+11. Seats - The number of seats in the car.
+12. Price - The price of the car (target).
 
 ## Repository Structure
 1. Data
 
-   Directory untuk menyimpan data raw dan data hasil olahan
+    Contains raw data and processed data
    
 2. Markdown
 
-   Menyimpan versi markdown dari notebooks
+    Contains markdown version of notebooks
    
 3. Notebooks
 
-   Menyipan hasil analisa atau olahan dari data dalam bentuk notebook yang terbagi menjadi 4 bagian:
+    Contains results of data analysis and processing in the form of jupyter notebook which is divided into 4 parts:
    
-   * data_prep : Data preparation sebelum dilakukan visualisasi
-   * data_vis : Visualisasi dan analisa data
-   * preprocessing : Preprocessing pada data sebelum dilakukan modeling seperti train test split, missing value dan outlier handling, categorical encoding, feature enginering, dll
-   * modeling : Pembuatan model
+    * data_prep: Data preparation before visualization
+    * data_vis: Data visualization and analysis
+    * preprocessing: Preprocessing of data before modeling such as train test splits, missing values and outlier handling, categorical encoding, feature engineering, etc.
+    * modeling: Model making
    
 4. Outputs
    
-   Menyimpan hasil model dalam format *.pkl
+    Contains model result in * .pkl format
    
 5. Scripts
    
-   Menyimpan versi python script dari notebooks
+    Contains python script version of notebooks
