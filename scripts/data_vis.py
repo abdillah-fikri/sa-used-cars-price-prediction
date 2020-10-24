@@ -457,3 +457,39 @@ df_grp.sort_values(by="car_count", ascending=False, inplace=True)
 df_grp[df_grp["Location"] == "Ahmedabad"].head(20)
 
 # %%
+df.head()
+
+# %%
+df.describe()
+
+
+# %%
+def segment(price):
+    if price <= 5.64:
+        return "Low"
+    elif price <= 20:
+        return "Middle"
+    else:
+        return "High"
+
+df["Segment"] = df["Price"].apply(segment)
+
+fig = px.histogram(df, x="Segment")
+fig.show()
+
+# %%
+fig = px.histogram(df, x="Segment", color="Owner_Type", barnorm="percent")
+fig.update_layout(yaxis=dict(title="Proportion"))
+fig.show()
+
+# %%
+fig = px.histogram(df, x="Segment", color="Location", barnorm="percent")
+fig.update_layout(yaxis=dict(title="Proportion"))
+fig.show()
+
+# %%
+fig = px.histogram(df, x="Segment", color="Fuel_Type", barnorm="percent")
+fig.update_layout(yaxis=dict(title="Proportion"))
+fig.show()
+
+# %%
