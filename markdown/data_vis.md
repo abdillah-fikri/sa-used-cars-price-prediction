@@ -515,36 +515,103 @@ def segment(price):
     else:
         return "High"
 
+
 df["Segment"] = df["Price"].apply(segment)
 
 fig = px.histogram(df, x="Segment", y="Price", histfunc="avg")
 fig.show()
+```
 
+
+```python
+print(px.colors.qualitative.D3)
 ```
 
 ```python
-fig = px.histogram(df, x="Segment")
+df_grp = df.groupby("Segment", as_index=False).agg(Count=("Brand", "count"))
+df_grp.sort_values(by="Count", ascending=False, inplace=True)
+
+colors = ["#1F77B4"] * 3
+colors[-1] = "lightslategray"
+
+fig = go.Figure(
+    data=[
+        go.Bar(
+            x=df_grp["Segment"],
+            y=df_grp["Count"],
+            text=df_grp["Count"],
+            textposition="auto",
+            marker_color=colors,
+        )
+    ]
+)
+fig.update_layout(
+    title="Market Segments",
+    xaxis=dict(title=""),
+    yaxis=dict(title="Count"),
+    height=500,
+    width=800,
+    margin=dict(l=100, r=50, t=100, b=50),
+)
 fig.show()
 ```
 
+
 ```python
-fig = px.histogram(df, x="Segment", color="Owner_Type", barnorm="percent")
-fig.update_layout(yaxis=dict(title="Proportion"))
+fig = px.histogram(
+    df,
+    x="Segment",
+    color="Owner_Type",
+    barnorm="percent",
+    category_orders={"Owner_Type": ["First", "Second", "Third", "Fourth & Above"]},
+)
+fig.update_layout(
+    title="Market segmentation based on Owner Type",
+    xaxis=dict(title=""),
+    yaxis=dict(title="Proportion"),
+    height=500,
+    width=800,
+    margin=dict(l=100, r=100, t=100, b=50),
+)
 fig.show()
 ```
 
 ```python
 fig = px.histogram(df, x="Segment", color="Location", barnorm="percent")
-fig.update_layout(yaxis=dict(title="Proportion"))
+fig.update_layout(
+    title="Market segmentation based on Location", 
+    xaxis=dict(title=""),
+    yaxis=dict(title="Proportion"),
+    height=500,
+    width=800,
+    margin=dict(l=100, r=100, t=100, b=50),
+)
 fig.show()
 ```
 
 ```python
-fig = px.histogram(df, x="Segment", color="Fuel_Type", barnorm="percent")
-fig.update_layout(yaxis=dict(title="Proportion"))
+fig = px.histogram(
+    df,
+    x="Segment",
+    color="Fuel_Type",
+    barnorm="percent",
+    category_orders={
+        "Fuel_Type": ["Diesel", "Petrol", "CNG", "LPG", "Electric"],
+        "Segment": ["Low", "Middle", "High"],
+    },
+)
+fig.update_layout(
+    title="Market segmentation based on Fuel Type",
+    xaxis=dict(title=""),
+    yaxis=dict(title="Proportion"),
+    height=500,
+    width=800,
+    margin=dict(l=100, r=100, t=100, b=50),
+)
 fig.show()
 ```
 
 ```python
 
 ```
+
