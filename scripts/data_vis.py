@@ -219,9 +219,15 @@ fig = px.scatter(
     hover_name="Brand",
     log_x=True,
     size_max=25,
+    category_orders={"Fuel_Type": ["Diesel", "Petrol", "CNG", "LPG", "Electric"]},
 )
 
-fig.update_layout(title="Engine and Mileage correlation")
+fig.update_layout(
+    title=dict(text="Engine and Mileage correlation", x=0),
+    height=500,
+    width=800,
+    margin=dict(l=100, r=100, t=100, b=100),
+)
 fig.show()
 
 # %%
@@ -428,43 +434,6 @@ fig.update_layout(height=400, width=1000)
 
 fig.show()
 
-# %%
-df.head()
-
-# %%
-df_grp = df.groupby(["Owner_Type", "Brand"]).agg(
-    car_count=("Owner_Type", "count"), median_car_price=("Price", "median")
-)
-df_grp.sort_values(by="car_count", ascending=False, inplace=True)
-df_grp.head(20)
-
-# %%
-df_grp = df.groupby(["Owner_Type", "Location", "Brand"], as_index=False).agg(
-    car_count=("Owner_Type", "count"), median_car_price=("Price", "median")
-)
-df_grp.sort_values(by="car_count", ascending=False, inplace=True)
-df_grp[df_grp["Location"] == "Ahmedabad"].head(20)
-
-# %%
-df_grp = df.groupby(["Fuel_Type", "Brand"]).agg(
-    car_count=("Fuel_Type", "count"), car_price=("Price", "median")
-)
-df_grp.sort_values(by="car_count", ascending=False, inplace=True)
-df_grp.head(20)
-
-# %%
-df_grp = df.groupby(["Fuel_Type", "Location", "Brand"], as_index=False).agg(
-    car_count=("Fuel_Type", "count"), median_car_price=("Price", "median")
-)
-df_grp.sort_values(by="car_count", ascending=False, inplace=True)
-df_grp[df_grp["Location"] == "Ahmedabad"].head(20)
-
-# %%
-df.head()
-
-# %%
-df.describe()
-
 
 # %%
 def segment(price):
@@ -483,13 +452,72 @@ fig.show()
 
 
 # %%
+
+# %%
+df_grp = df.groupby(["Segment", "Brand"], as_index=False).agg(Count=("Price", "count"))
+df_grp.sort_values(by="Count", ascending=False, inplace=True)
+
+
+def filtering(data):
+    if data["Count"] < 100:
+        return "Other"
+    else:
+        return data["Brand"]
+
+
+df_grp["Brand2"] = df_grp.apply(filtering, axis=1)
+
+fig = px.pie(df_grp[df_grp["Segment"] == "Low"], values="Count", names="Brand2")
+fig.update_traces(textposition="inside", textinfo="percent+label")
+fig.update_layout(title="Low", showlegend=False)
+fig.show()
+
+# %%
+df_grp = df.groupby(["Segment", "Brand"], as_index=False).agg(Count=("Price", "count"))
+df_grp.sort_values(by="Count", ascending=False, inplace=True)
+
+
+def filtering(data):
+    if data["Count"] < 80:
+        return "Other"
+    else:
+        return data["Brand"]
+
+
+df_grp["Brand2"] = df_grp.apply(filtering, axis=1)
+
+fig = px.pie(df_grp[df_grp["Segment"] == "Middle"], values="Count", names="Brand2")
+fig.update_traces(textposition="inside", textinfo="percent+label")
+fig.update_layout(title="Middle", showlegend=False)
+fig.show()
+
+# %%
+df_grp = df.groupby(["Segment", "Brand"], as_index=False).agg(Count=("Price", "count"))
+df_grp.sort_values(by="Count", ascending=False, inplace=True)
+
+
+def filtering(data):
+    if data["Count"] < 20:
+        return "Other"
+    else:
+        return data["Brand"]
+
+
+df_grp["Brand2"] = df_grp.apply(filtering, axis=1)
+
+fig = px.pie(df_grp[df_grp["Segment"] == "High"], values="Count", names="Brand2")
+fig.update_traces(textposition="inside", textinfo="percent+label")
+fig.update_layout(title="High", showlegend=False)
+fig.show()
+
+# %%
 print(px.colors.qualitative.D3)
 
 # %%
 df_grp = df.groupby("Segment", as_index=False).agg(Count=("Brand", "count"))
 df_grp.sort_values(by="Count", ascending=False, inplace=True)
 
-colors = ["#1F77B4"] * 3
+colors = ["#F38B34"] * 3
 colors[-1] = "lightslategray"
 
 fig = go.Figure(
@@ -518,9 +546,28 @@ fig.show()
 fig = px.histogram(
     df,
     x="Segment",
+    color="Transmission",
+    barnorm="percent",
+    color_discrete_sequence=["#F38B34", "#349df3", "#8a34f3", "#9df334"],
+)
+fig.update_layout(
+    title="Market segmentation based on Transmission",
+    xaxis=dict(title=""),
+    yaxis=dict(title="Proportion"),
+    height=500,
+    width=800,
+    margin=dict(l=100, r=100, t=100, b=50),
+)
+fig.show()
+
+# %%
+fig = px.histogram(
+    df,
+    x="Segment",
     color="Owner_Type",
     barnorm="percent",
     category_orders={"Owner_Type": ["First", "Second", "Third", "Fourth & Above"]},
+    color_discrete_sequence=["#F38B34", "#349df3", "#8a34f3", "#9df334"],
 )
 fig.update_layout(
     title="Market segmentation based on Owner Type",
@@ -532,10 +579,29 @@ fig.update_layout(
 )
 fig.show()
 
+
 # %%
-fig = px.histogram(df, x="Segment", color="Location", barnorm="percent")
+def zone(data):
+    if data in ["Kolkata"]:
+        return "Eastern"
+    elif data in ["Delhi", "Jaipur"]:
+        return "Northern"
+    elif data in ["Ahmedabad", "Mumbai", "Pune"]:
+        return "Western"
+    else:
+        return "Southern"
+
+
+# Northern ["Delhi", "Jaipur"]
+# Central ["Kolkata"]
+# Western ["Ahmedabad", "Mumbai", "Pune"]
+# Southern ["Chennai", "Hyderabad", "Bengaluru", "Coimbatore", "Kochi"]
+
+df["Zone"] = df["Location"].apply(zone)
+
+fig = px.histogram(df, x="Segment", color="Zone", barnorm="percent")
 fig.update_layout(
-    title="Market segmentation based on Location", 
+    title="Market segmentation based on Zone",
     xaxis=dict(title=""),
     yaxis=dict(title="Proportion"),
     height=500,
@@ -554,6 +620,7 @@ fig = px.histogram(
         "Fuel_Type": ["Diesel", "Petrol", "CNG", "LPG", "Electric"],
         "Segment": ["Low", "Middle", "High"],
     },
+    color_discrete_sequence=["#F38B34", "#349df3", "#8a34f3", "#9df334"],
 )
 fig.update_layout(
     title="Market segmentation based on Fuel Type",
@@ -566,3 +633,4 @@ fig.update_layout(
 fig.show()
 
 # %%
+
