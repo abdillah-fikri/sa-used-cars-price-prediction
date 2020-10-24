@@ -8,11 +8,11 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.6.0
 #   kernelspec:
-#     display_name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
+#     display_name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
 #     metadata:
 #       interpreter:
-#         hash: 0def509d864da8b5a1806818af2135cd2a80c010b2a4e961690c3f19f43c05fc
-#     name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
+#         hash: 8d4d772f21767a3a72f3356b4ab1badff3b831eb21eba306d4ebdf1fe7777d12
+#     name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
 # ---
 
 # %% [markdown]
@@ -25,8 +25,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
 import plotly.express as px
+import plotly.io as pio
 import missingno as msno
 from utils import *
+
+pio.templates.default = "presentation"
 
 # %%
 df = pd.read_csv("../data/processed/after_prep.csv")
@@ -474,6 +477,11 @@ def segment(price):
 
 df["Segment"] = df["Price"].apply(segment)
 
+fig = px.histogram(df, x="Segment", y="Price", histfunc="avg")
+fig.show()
+
+
+# %%
 fig = px.histogram(df, x="Segment")
 fig.show()
 
