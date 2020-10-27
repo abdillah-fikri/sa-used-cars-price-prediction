@@ -29,28 +29,35 @@ import plotly.io as pio
 import missingno as msno
 from utils import *
 
-pio.templates.default = "presentation"
-
 # %%
+# Import data
 df = pd.read_csv("../data/processed/after_prep.csv")
 df.head()
 
 # %%
+# Summary statistic
 df.describe()
 
 # %%
-msno.matrix(df, color=(0, 0.4, 0.7), figsize=(8, 4))
+# Missing value matrix
+msno.matrix(df, color=(0, 0.4, 0.7), figsize=(15, 6))
+
+# %% [markdown]
+# ## Univariate Analysis
 
 # %%
+# Plot target variable distribution
 fig, ax = plt.subplots(2, 1, figsize=(12, 7))
 sns.histplot(data=df, x="Price", ax=ax[0])
 sns.boxplot(data=df, x="Price", ax=ax[1])
 plt.show()
 
 # %%
+# Examine price greater than 80
 df[df["Price"] > 80]
 
 # %%
+# Categorize cols variables for plotting
 num_cols = [
     col for col in df.drop(columns="Price").columns if df[col].dtype != "object"
 ]
@@ -58,7 +65,11 @@ cat_cols = [
     col for col in df.drop(columns="Price").columns if df[col].dtype == "object"
 ]
 
+# %% [markdown]
+# ### Numerical features
+
 # %%
+# Plotting first 3 numerical features distribution
 plt.figure(figsize=(15, 6))
 
 for index, col in enumerate(num_cols[:3]):
@@ -73,6 +84,7 @@ plt.tight_layout()
 plt.show()
 
 # %%
+# Plot last 3 numerical features distribution
 plt.figure(figsize=(15, 6))
 
 for index, col in enumerate(num_cols[3:]):
@@ -87,6 +99,7 @@ plt.tight_layout()
 plt.show()
 
 # %%
+# Examine outlier on Kilometers Driven feature
 plt.figure(figsize=(8, 6))
 plt.subplot(211)
 sns.histplot(data=df, x="Kilometers_Driven")
@@ -100,6 +113,7 @@ df = df[~(df.Kilometers_Driven > 1e6)]
 df.shape
 
 # %%
+# Plot after outlier removed
 plt.figure(figsize=(8, 6))
 plt.subplot(211)
 sns.histplot(data=df, x="Kilometers_Driven")
@@ -109,15 +123,17 @@ plt.tight_layout()
 plt.show()
 
 # %%
+# Examine car that have seats more than or equal 9
 df[df.Seats >= 9]
+
+# %% [markdown]
+# ### Categorical features
 
 # %%
 df.describe(include=["object"])
 
 # %%
-cat_cols
-
-# %%
+# Make count plot the categorical features
 cols_toplot = ["Fuel_Type", "Transmission", "Location", "Owner_Type"]
 plt.figure(figsize=(12, 8))
 countplot_annot(2, 2, data=df, columns=cols_toplot, rotate=45, rcol=cols_toplot)
@@ -125,21 +141,17 @@ plt.tight_layout()
 plt.show()
 
 # %%
+# Count plot for Brand feature
 plt.figure(figsize=(15, 4))
 countplot_annot(1, 1, data=df, columns=["Brand"], rotate=90, rcol=["Brand"])
 plt.ylim(0, 1300)
 plt.show()
 
-# %%
-fig = px.bar(
-    y=df["Series"].value_counts()[:50],
-    x=df["Series"].value_counts()[:50].keys(),
-    text=df["Series"].value_counts()[:50],
-)
-fig.update_layout(autosize=False, width=1200, height=500)
-fig.show()
+# %% [markdown]
+# ## Bivariate Analysis
 
 # %%
+# Bar plot with mean value of Price by Fuel_Type, Transmission, and Owner_Type
 plt.figure(figsize=(15, 4))
 
 for index, col in enumerate(["Fuel_Type", "Transmission", "Owner_Type"]):
@@ -150,6 +162,7 @@ plt.tight_layout()
 plt.show()
 
 # %%
+# Box plot with mean value of Price by Fuel_Type, Transmission, and Owner_Type
 plt.figure(figsize=(15, 4))
 
 for index, col in enumerate(["Fuel_Type", "Transmission", "Owner_Type"]):
@@ -160,28 +173,33 @@ plt.tight_layout()
 plt.show()
 
 # %%
+# Bar plot with mean value of Price by Location
 plt.figure(figsize=(12, 6))
 sns.barplot(data=df, x="Location", y="Price")
 plt.show()
 
 # %%
+# Box plot with mean value of Price by Location
 plt.figure(figsize=(15, 8))
 sns.boxplot(data=df, x="Location", y="Price")
 plt.show()
 
 # %%
+# Bar plot with mean value of Price by Brand
 plt.figure(figsize=(15, 8))
 sns.barplot(data=df, x="Brand", y="Price")
 plt.xticks(rotation=90)
 plt.show()
 
 # %%
+# Box plot with mean value of Price by Brand
 plt.figure(figsize=(15, 8))
 sns.boxplot(data=df, x="Brand", y="Price")
 plt.xticks(rotation=90)
 plt.show()
 
 # %%
+# Correlation heatmap
 import category_encoders as ce
 
 t_encoder = ce.TargetEncoder()
@@ -193,6 +211,7 @@ sns.heatmap(df_temp.corr(), annot=True, linewidths=0.5, fmt=".2f")
 plt.show()
 
 # %%
+# Bubble plot Engine and Power correlation with Price and Transmission
 import plotly.express as px
 
 fig = px.scatter(
@@ -210,6 +229,7 @@ fig.update_layout(title="Engine and Power correlation")
 fig.show()
 
 # %%
+# Bubble plot Engine and Mileage correlation with Price and Transmission
 fig = px.scatter(
     df,
     x="Mileage (kmpl)",
@@ -222,15 +242,11 @@ fig = px.scatter(
     category_orders={"Fuel_Type": ["Diesel", "Petrol", "CNG", "LPG", "Electric"]},
 )
 
-fig.update_layout(
-    title=dict(text="Engine and Mileage correlation", x=0),
-    height=500,
-    width=800,
-    margin=dict(l=100, r=100, t=100, b=100),
-)
+fig.update_layout(title=dict(text="Engine and Mileage correlation"),)
 fig.show()
 
 # %%
+# Plot time series of Price and Mileage
 from sklearn.preprocessing import MinMaxScaler
 
 df_grp = df.groupby("Year")["Price", "Mileage (kmpl)"].mean()
@@ -257,6 +273,7 @@ fig = go.Figure(data=data, layout=layout)
 fig.show()
 
 # %%
+# Bar plot with median price by Brand
 import plotly.graph_objects as go
 
 df_grp = df.groupby(["Brand", "Transmission"], as_index=False)["Price"].median()
@@ -276,6 +293,7 @@ fig = px.bar(
 fig.show()
 
 # %%
+# Bar plot with count of car vs Median price
 df_grp = df.groupby(["Brand"], as_index=False).agg(
     Median_Price=("Price", "median"), Count=("Price", "count")
 )
@@ -346,6 +364,7 @@ fig.update_layout(height=500, width=1400)
 fig.show()
 
 # %%
+# Plot car count vs median price comparison
 from sklearn.preprocessing import MinMaxScaler
 
 df_grp = df.groupby("Brand", as_index=False).agg(
@@ -361,9 +380,7 @@ df_grp["car_count_scaled"] = (
 df_grp["car_price_scaled"] = (
     scaler.fit_transform(df_grp["car_price"].values.reshape(-1, 1)) + 0.02
 )
-
 fig = go.Figure()
-
 fig.add_trace(
     go.Bar(
         x=df_grp["Brand"],
@@ -373,7 +390,6 @@ fig.add_trace(
         name="CAR COUNT",
     )
 )
-
 fig.add_trace(
     go.Bar(
         x=df_grp["Brand"],
@@ -383,19 +399,18 @@ fig.add_trace(
         name="MEDIAN CAR PRICE",
     )
 )
-fig.update_layout(height=500, width=1400)
-
+fig.update_layout(title="Car count vs median price comparison", height=400, width=1000)
 fig.show()
 
 # %%
+# Excluding car brand with lower than 5 count
 df_grp = df.groupby("Brand", as_index=False).agg(
     car_count=("Brand", "count"), car_price=("Price", "median")
 )
 df_grp[df_grp["car_count"] < 5]
 
 # %%
-from sklearn.preprocessing import MinMaxScaler
-
+# Plot car count vs median price comparison excluding car brand with lower than 5 count
 df_grp = df.groupby("Location", as_index=False).agg(
     car_count=("Location", "count"), car_price=("Price", "median")
 )
@@ -408,9 +423,7 @@ df_grp["car_count_scaled"] = (
 df_grp["car_price_scaled"] = (
     scaler.fit_transform(df_grp["car_price"].values.reshape(-1, 1)) + 0.1
 )
-
 fig = go.Figure()
-
 fig.add_trace(
     go.Bar(
         x=df_grp["Location"],
@@ -420,7 +433,6 @@ fig.add_trace(
         name="CAR COUNT",
     )
 )
-
 fig.add_trace(
     go.Bar(
         x=df_grp["Location"],
@@ -430,12 +442,12 @@ fig.add_trace(
         name="MEDIAN CAR PRICE",
     )
 )
-fig.update_layout(height=400, width=1000)
-
+fig.update_layout(title="Car count vs median price comparison", height=400, width=1000)
 fig.show()
 
 
 # %%
+# Make and plot price segmentation
 def segment(price):
     if price <= 5.64:
         return "Low"
@@ -452,8 +464,17 @@ fig.show()
 
 
 # %%
+# Pie plot for distributon of market segmentation
+df_grp = df.groupby("Segment", as_index=False).agg(Count=("Brand", "count"))
+df_grp.sort_values(by="Count", ascending=False, inplace=True)
+
+fig = px.pie(df_grp, values="Count", names="Segment")
+fig.update_traces(textposition="inside", textinfo="percent+label")
+fig.update_layout(title="Market Segmentation", showlegend=False)
+fig.show()
 
 # %%
+# Pie plot for Car brand on Low segmentation
 df_grp = df.groupby(["Segment", "Brand"], as_index=False).agg(Count=("Price", "count"))
 df_grp.sort_values(by="Count", ascending=False, inplace=True)
 
@@ -473,6 +494,7 @@ fig.update_layout(title="Low", showlegend=False)
 fig.show()
 
 # %%
+# Pie plot for Car brand on Middle segmentation
 df_grp = df.groupby(["Segment", "Brand"], as_index=False).agg(Count=("Price", "count"))
 df_grp.sort_values(by="Count", ascending=False, inplace=True)
 
@@ -492,6 +514,7 @@ fig.update_layout(title="Middle", showlegend=False)
 fig.show()
 
 # %%
+# Pie plot for Car brand on High segmentation
 df_grp = df.groupby(["Segment", "Brand"], as_index=False).agg(Count=("Price", "count"))
 df_grp.sort_values(by="Count", ascending=False, inplace=True)
 
@@ -511,15 +534,11 @@ fig.update_layout(title="High", showlegend=False)
 fig.show()
 
 # %%
-print(px.colors.qualitative.D3)
-
-# %%
+# Bar plot for distributon of market segmentation
 df_grp = df.groupby("Segment", as_index=False).agg(Count=("Brand", "count"))
 df_grp.sort_values(by="Count", ascending=False, inplace=True)
-
 colors = ["#F38B34"] * 3
 colors[-1] = "lightslategray"
-
 fig = go.Figure(
     data=[
         go.Bar(
@@ -543,6 +562,7 @@ fig.show()
 
 
 # %%
+# Proprotion bar plot for Market segmentation based on Transmission
 fig = px.histogram(
     df,
     x="Segment",
@@ -561,6 +581,7 @@ fig.update_layout(
 fig.show()
 
 # %%
+# Proprotion bar plot for Market segmentation based on Owner Type
 fig = px.histogram(
     df,
     x="Segment",
@@ -581,6 +602,7 @@ fig.show()
 
 
 # %%
+# Proprotion bar plot for Market segmentation based on Zone
 def zone(data):
     if data in ["Kolkata"]:
         return "Eastern"
@@ -611,6 +633,7 @@ fig.update_layout(
 fig.show()
 
 # %%
+# Proprotion bar plot for Market segmentation based on Fuel Type
 fig = px.histogram(
     df,
     x="Segment",
@@ -631,6 +654,3 @@ fig.update_layout(
     margin=dict(l=100, r=100, t=100, b=50),
 )
 fig.show()
-
-# %%
-
