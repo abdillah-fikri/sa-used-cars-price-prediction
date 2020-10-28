@@ -1,0 +1,15 @@
+Model,Train R2,CV R2,Test R2,Train RMSE,CV RMSE,Test RMSE,Train MAE,CV MAE,Test MAE,Dataset Version
+LGBMRegressor,0.9661,0.9104,0.9086,2.0413,3.3043,3.4511,0.8994,1.2858,1.2924,imputed + selected + unscaled
+CatBoostRegressor,0.9899,0.9173,0.9067,1.1141,3.1805,3.4867,0.7171,1.2311,1.257,imputed + selected + unscaled
+RandomForestRegressor,0.9863,0.9026,0.8869,1.2946,3.4454,3.8384,0.5312,1.3585,1.4156,imputed + selected + unscaled
+XGBRegressor,0.9954,0.9068,0.8835,0.7494,3.3722,3.8962,0.4892,1.2957,1.3519,imputed + selected + unscaled
+DecisionTreeRegressor,0.999,0.8326,0.8724,0.3581,4.4707,4.0778,0.0962,1.7618,1.7258,imputed + selected + unscaled
+LinearRegression,0.7975,0.7947,0.777,4.9863,5.0119,5.3902,2.7136,2.7292,2.8814,imputed + selected + unscaled
+LassoRegression,0.7948,0.7925,0.7761,5.0194,5.0399,5.4014,2.6484,2.6638,2.8202,imputed + selected + unscaled
+LGBMRegressor,0.9662,0.912,0.9081,2.0369,3.2726,3.4609,0.8997,1.2751,1.301,imputed + selected + scaled
+CatBoostRegressor,0.9899,0.9173,0.9067,1.1141,3.1805,3.4867,0.7171,1.2311,1.2569,imputed + selected + scaled
+RandomForestRegressor,0.9865,0.9074,0.8898,1.287,3.3634,3.7887,0.5284,1.3512,1.4073,imputed + selected + scaled
+XGBRegressor,0.9954,0.9068,0.8835,0.7494,3.3722,3.8963,0.4892,1.2957,1.3522,imputed + selected + scaled
+DecisionTreeRegressor,0.999,0.8355,0.8666,0.3581,4.4287,4.1692,0.0962,1.751,1.7691,imputed + selected + scaled
+LinearRegression,0.7975,0.7947,0.777,4.9863,5.0119,5.3902,2.7136,2.7292,2.8814,imputed + selected + scaled
+LassoRegression,0.7579,0.7542,0.7228,5.4523,5.4843,6.0104,2.6109,2.6347,2.8508,imputed + selected + scaled

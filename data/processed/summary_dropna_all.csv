@@ -1,11 +1,15 @@
 Model,Train R2,CV R2,Test R2,Train RMSE,CV RMSE,Test RMSE,Train MAE,CV MAE,Test MAE,Dataset Version
-CatBoostRegressor,0.9936,0.9282,0.9241,0.8776,2.8746,3.2346,0.6022,1.1218,1.2277,dropna + all + unscaled
-LGBMRegressor,0.9729,0.919,0.9031,1.8035,3.0825,3.6549,0.7936,1.1914,1.3504,dropna + all + unscaled
-RandomForestRegressor,0.9888,0.914,0.8959,1.159,3.1808,3.7885,0.4676,1.264,1.4497,dropna + all + unscaled
-XGBRegressor,0.9977,0.9134,0.8913,0.5278,3.167,3.8712,0.3761,1.2154,1.3612,dropna + all + unscaled
-DecisionTreeRegressor,1.0,0.8548,0.7637,0.0131,4.159,5.7092,0.0006,1.7353,1.9412,dropna + all + unscaled
-CatBoostRegressor,0.9936,0.9282,0.9241,0.8776,2.8746,3.2346,0.6022,1.1218,1.2277,dropna + all + scaled
-LGBMRegressor,0.9731,0.919,0.9036,1.7988,3.0816,3.6471,0.7914,1.1868,1.3393,dropna + all + scaled
-RandomForestRegressor,0.9865,0.9153,0.8985,1.2749,3.1569,3.7422,0.467,1.2512,1.4496,dropna + all + scaled
-XGBRegressor,0.9977,0.9134,0.8913,0.5278,3.167,3.8711,0.3761,1.2155,1.361,dropna + all + scaled
-DecisionTreeRegressor,1.0,0.857,0.7837,0.0131,4.1237,5.4613,0.0006,1.7187,1.9386,dropna + all + scaled
+CatBoostRegressor,0.9921,0.9172,0.927,0.9729,3.0612,3.1735,0.6474,1.1501,1.2112,dropna + all + unscaled
+LGBMRegressor,0.9712,0.9155,0.9077,1.8601,3.1305,3.5669,0.8026,1.2079,1.3334,dropna + all + unscaled
+XGBRegressor,0.9978,0.897,0.8927,0.5149,3.4307,3.847,0.3606,1.2434,1.3981,dropna + all + unscaled
+RandomForestRegressor,0.987,0.9041,0.8858,1.2488,3.3563,3.9693,0.4745,1.2893,1.4229,dropna + all + unscaled
+DecisionTreeRegressor,1.0,0.7981,0.7966,0.0131,4.8638,5.2961,0.0006,1.7862,1.9271,dropna + all + unscaled
+LinearRegression,0.8057,0.8045,0.7593,4.8297,4.8405,5.7621,2.629,2.6453,2.8775,dropna + all + unscaled
+LassoRegression,0.8018,0.801,0.7557,4.879,4.8829,5.804,2.5747,2.5867,2.8106,dropna + all + unscaled
+CatBoostRegressor,0.9921,0.9172,0.927,0.9729,3.0612,3.1735,0.6474,1.1501,1.2112,dropna + all + scaled
+LGBMRegressor,0.9724,0.9156,0.909,1.8197,3.1327,3.5425,0.7857,1.2024,1.3374,dropna + all + scaled
+XGBRegressor,0.9978,0.897,0.8927,0.5149,3.4311,3.8472,0.3606,1.2435,1.3989,dropna + all + scaled
+RandomForestRegressor,0.9855,0.9055,0.8847,1.3198,3.3339,3.9875,0.4837,1.2859,1.4289,dropna + all + scaled
+DecisionTreeRegressor,1.0,0.8061,0.8072,0.0131,4.7405,5.1563,0.0006,1.7906,1.8763,dropna + all + scaled
+LinearRegression,0.8057,0.8045,0.7593,4.8297,4.8405,5.7621,2.629,2.6453,2.8775,dropna + all + scaled
+LassoRegression,0.7691,0.7679,0.6884,5.2651,5.2649,6.5558,2.4664,2.4766,2.8149,dropna + all + scaled
