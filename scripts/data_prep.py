@@ -8,11 +8,11 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.6.0
 #   kernelspec:
-#     display_name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
+#     display_name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
 #     metadata:
 #       interpreter:
-#         hash: 0def509d864da8b5a1806818af2135cd2a80c010b2a4e961690c3f19f43c05fc
-#     name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
+#         hash: 8d4d772f21767a3a72f3356b4ab1badff3b831eb21eba306d4ebdf1fe7777d12
+#     name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
 # ---
 
 # %%
@@ -37,10 +37,10 @@ df.info()
 null_checker(df)
 
 # %%
-# Extrack features
-df["Brand"] = df["Name"].apply(lambda x: x.split(" ")[0])
-df["Series"] = df["Name"].apply(lambda x: x.split(" ")[1])
-df.drop(columns="Name", inplace=True)
+df['Brand'] = df['Name'].apply(lambda x: x.split(' ')[0])
+df['Series'] = df['Name'].apply(lambda x: x.split(' ')[1])
+df['Type'] = df['Name'].apply(lambda x: x.split(' ')[2])
+df.drop(columns='Name', inplace=True)
 
 # %%
 # Check features unit
@@ -74,9 +74,7 @@ print(
 
 # %%
 # Remove features unit and convert to numeric
-df["Mileage (kmpl)"] = df["Mileage"].apply(
-    lambda x: x if pd.isna(x) else x.split(" ")[0]
-)
+df["Mileage (kmpl)"] = df["Mileage"].apply(lambda x: x if pd.isna(x) else x.split(" ")[0])
 df["Engine (CC)"] = df["Engine"].apply(lambda x: x if pd.isna(x) else x.split(" ")[0])
 df["Power (bhp)"] = df["Power"].apply(lambda x: x if pd.isna(x) else x.split(" ")[0])
 
@@ -131,6 +129,11 @@ df.describe(include=["object"])
 
 # %%
 null_checker(df)
+
+# %%
+# Replace Electric car's mileage to 0
+df.loc[df['Fuel_Type']=='Electric', 'Mileage (kmpl)'] = df.loc[df['Fuel_Type']=='Electric', 'Mileage (kmpl)'].replace(np.nan, 0)
+df.loc[df['Fuel_Type']=='Electric']
 
 # %%
 df.to_csv("../data/processed/after_prep.csv", index=False)

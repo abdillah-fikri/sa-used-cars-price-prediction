@@ -1,0 +1,11 @@
+Model,Train R2,CV R2,Test R2,Train RMSE,CV RMSE,Test RMSE,Train MAE,CV MAE,Test MAE,Dataset Version
+CatBoostRegressor,0.9936,0.9282,0.9241,0.8776,2.8746,3.2346,0.6022,1.1218,1.2277,dropna + all + unscaled
+LGBMRegressor,0.9729,0.919,0.9031,1.8035,3.0825,3.6549,0.7936,1.1914,1.3504,dropna + all + unscaled
+RandomForestRegressor,0.9888,0.914,0.8959,1.159,3.1808,3.7885,0.4676,1.264,1.4497,dropna + all + unscaled
+XGBRegressor,0.9977,0.9134,0.8913,0.5278,3.167,3.8712,0.3761,1.2154,1.3612,dropna + all + unscaled
+DecisionTreeRegressor,1.0,0.8548,0.7637,0.0131,4.159,5.7092,0.0006,1.7353,1.9412,dropna + all + unscaled
+CatBoostRegressor,0.9936,0.9282,0.9241,0.8776,2.8746,3.2346,0.6022,1.1218,1.2277,dropna + all + scaled
+LGBMRegressor,0.9731,0.919,0.9036,1.7988,3.0816,3.6471,0.7914,1.1868,1.3393,dropna + all + scaled
+RandomForestRegressor,0.9865,0.9153,0.8985,1.2749,3.1569,3.7422,0.467,1.2512,1.4496,dropna + all + scaled
+XGBRegressor,0.9977,0.9134,0.8913,0.5278,3.167,3.8711,0.3761,1.2155,1.361,dropna + all + scaled
+DecisionTreeRegressor,1.0,0.857,0.7837,0.0131,4.1237,5.4613,0.0006,1.7187,1.9386,dropna + all + scaled

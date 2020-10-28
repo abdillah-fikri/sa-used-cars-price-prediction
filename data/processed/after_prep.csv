@@ -4445,7 +4445,7 @@ Hyderabad,2016,80103,Diesel,Manual,First,5.0,1.8,Tata,Indica,V2,25.0,1396.0,69.0
 Kolkata,2007,42100,Petrol,Manual,First,5.0,0.99,Chevrolet,Spark,1.0,18.0,995.0,62.0
 Kolkata,2018,4500,Petrol,Manual,First,5.0,4.8,Hyundai,Grand,i10,18.9,1197.0,81.86
 Mumbai,2014,97000,Diesel,Manual,First,7.0,17.95,Toyota,Fortuner,4x4,12.55,2982.0,169.0
-Chennai,2016,50000,Electric,Automatic,First,5.0,13.0,Mahindra,E,Verito,,72.0,41.0
+Chennai,2016,50000,Electric,Automatic,First,5.0,13.0,Mahindra,E,Verito,0.0,72.0,41.0
 Kochi,2017,51223,Petrol,Manual,First,5.0,5.66,Hyundai,Grand,i10,18.9,1197.0,81.86
 Delhi,2009,64000,Petrol,Manual,First,5.0,3.1,Honda,City,1.5,17.0,1497.0,118.0
 Kochi,2016,56911,Petrol,Manual,First,5.0,6.54,Hyundai,Elite,i20,18.6,1197.0,81.86
@@ -4903,7 +4903,7 @@ Hyderabad,2007,71000,Petrol,Automatic,First,5.0,2.4,Hyundai,Santro,Xing,17.0,108
 Jaipur,2015,46650,Petrol,Manual,First,5.0,4.25,Honda,Brio,S,19.4,1198.0,86.8
 Mumbai,2018,3000,Petrol,Automatic,First,5.0,8.85,Maruti,Baleno,Alpha,21.4,1197.0,83.1
 Coimbatore,2014,14799,Petrol,Manual,First,5.0,4.14,Hyundai,EON,Sportz,21.1,814.0,55.2
-Mumbai,2011,44000,Electric,Automatic,First,5.0,12.75,Toyota,Prius,2009-2016,,1798.0,73.0
+Mumbai,2011,44000,Electric,Automatic,First,5.0,12.75,Toyota,Prius,2009-2016,0.0,1798.0,73.0
 Hyderabad,2015,68525,Diesel,Manual,First,5.0,7.0,Hyundai,i20,1.4,23.0,1396.0,90.0
 Hyderabad,2018,15000,Diesel,Automatic,First,7.0,33.0,Ford,Endeavour,3.2,10.91,3198.0,197.0
 Ahmedabad,2017,29000,Petrol,Manual,First,5.0,10.0,Honda,City,i-VTEC,17.4,1497.0,117.3

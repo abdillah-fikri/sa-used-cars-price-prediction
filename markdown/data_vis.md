@@ -262,7 +262,9 @@ fig = px.scatter(
     category_orders={"Fuel_Type": ["Diesel", "Petrol", "CNG", "LPG", "Electric"]},
 )
 
-fig.update_layout(title=dict(text="Engine and Mileage correlation"),)
+fig.update_layout(
+    title=dict(text="Engine and Mileage correlation"),
+)
 fig.show()
 ```
 
@@ -341,6 +343,11 @@ fig.show()
 ```
 
 # Update for Final Presentation
+
+```python
+# pio.templates.default = "presentation"
+# pio.templates
+```
 
 ```python
 df.head()
@@ -424,7 +431,10 @@ fig.add_trace(
         name="MEDIAN CAR PRICE",
     )
 )
-fig.update_layout(title="Car count vs median price comparison", height=400, width=1000)
+fig.update_layout(
+    title="Car count vs median price comparison",
+    height=400, width=1000
+)
 fig.show()
 ```
 
@@ -469,7 +479,10 @@ fig.add_trace(
         name="MEDIAN CAR PRICE",
     )
 )
-fig.update_layout(title="Car count vs median price comparison", height=400, width=1000)
+fig.update_layout(
+    title="Car count vs median price comparison",
+    height=400, width=1000
+)
 fig.show()
 ```
 
@@ -493,75 +506,55 @@ fig.show()
 
 ```python
 # Pie plot for distributon of market segmentation
-df_grp = df.groupby("Segment", as_index=False).agg(Count=("Brand", "count"))
-df_grp.sort_values(by="Count", ascending=False, inplace=True)
+df_segment = df.groupby(["Segment", "Brand"], as_index=False).agg(Count=("Price", "count"))
+df_segment.sort_values(by="Count", ascending=False, inplace=True)
 
-fig = px.pie(df_grp, values="Count", names="Segment")
+fig = px.pie(df_segment, values="Count", names="Segment", color_discrete_sequence=px.colors.qualitative.Vivid)
 fig.update_traces(textposition="inside", textinfo="percent+label")
-fig.update_layout(title="Market Segmentation", showlegend=False)
+fig.update_layout(
+    title="Market Segmentation",
+    showlegend=False, font_size=18
+)
 fig.show()
 ```
 
 ```python
+df_segment
+```
+
+```python
 # Pie plot for Car brand on Low segmentation
-df_grp = df.groupby(["Segment", "Brand"], as_index=False).agg(Count=("Price", "count"))
-df_grp.sort_values(by="Count", ascending=False, inplace=True)
-
-
-def filtering(data):
-    if data["Count"] < 100:
-        return "Other"
-    else:
-        return data["Brand"]
-
-
-df_grp["Brand2"] = df_grp.apply(filtering, axis=1)
-
-fig = px.pie(df_grp[df_grp["Segment"] == "Low"], values="Count", names="Brand2")
+df_low = df_segment[df_segment["Segment"] == "Low"]
+df_low["Brand_2"] = df_low.apply(
+    lambda data: "Other" if data["Count"] < 70 else data["Brand"], axis=1
+)
+fig = px.pie(df_low, values="Count", names="Brand_2", color_discrete_sequence=px.colors.qualitative.Vivid)
 fig.update_traces(textposition="inside", textinfo="percent+label")
-fig.update_layout(title="Low", showlegend=False)
+fig.update_layout(title="Low", showlegend=False, font_size=16)
 fig.show()
 ```
 
 ```python
 # Pie plot for Car brand on Middle segmentation
-df_grp = df.groupby(["Segment", "Brand"], as_index=False).agg(Count=("Price", "count"))
-df_grp.sort_values(by="Count", ascending=False, inplace=True)
-
-
-def filtering(data):
-    if data["Count"] < 80:
-        return "Other"
-    else:
-        return data["Brand"]
-
-
-df_grp["Brand2"] = df_grp.apply(filtering, axis=1)
-
-fig = px.pie(df_grp[df_grp["Segment"] == "Middle"], values="Count", names="Brand2")
+df_middle = df_segment[df_segment["Segment"] == "Middle"]
+df_middle["Brand_2"] = df_middle.apply(
+    lambda data: "Other" if data["Count"] < 35 else data["Brand"], axis=1
+)
+fig = px.pie(df_middle, values="Count", names="Brand_2", color_discrete_sequence=px.colors.qualitative.Vivid)
 fig.update_traces(textposition="inside", textinfo="percent+label")
-fig.update_layout(title="Middle", showlegend=False)
+fig.update_layout(title="Middle", showlegend=False, font_size=16)
 fig.show()
 ```
 
 ```python
 # Pie plot for Car brand on High segmentation
-df_grp = df.groupby(["Segment", "Brand"], as_index=False).agg(Count=("Price", "count"))
-df_grp.sort_values(by="Count", ascending=False, inplace=True)
-
-
-def filtering(data):
-    if data["Count"] < 20:
-        return "Other"
-    else:
-        return data["Brand"]
-
-
-df_grp["Brand2"] = df_grp.apply(filtering, axis=1)
-
-fig = px.pie(df_grp[df_grp["Segment"] == "High"], values="Count", names="Brand2")
+df_high = df_segment[df_segment["Segment"] == "High"]
+df_high["Brand_2"] = df_high.apply(
+    lambda data: "Other" if data["Count"] < 15 else data["Brand"], axis=1
+)
+fig = px.pie(df_high, values="Count", names="Brand_2", color_discrete_sequence=px.colors.qualitative.Vivid)
 fig.update_traces(textposition="inside", textinfo="percent+label")
-fig.update_layout(title="High", showlegend=False)
+fig.update_layout(title="High", showlegend=False, font_size=16)
 fig.show()
 ```
 
@@ -569,16 +562,13 @@ fig.show()
 # Bar plot for distributon of market segmentation
 df_grp = df.groupby("Segment", as_index=False).agg(Count=("Brand", "count"))
 df_grp.sort_values(by="Count", ascending=False, inplace=True)
-colors = ["#F38B34"] * 3
-colors[-1] = "lightslategray"
 fig = go.Figure(
     data=[
         go.Bar(
             x=df_grp["Segment"],
             y=df_grp["Count"],
             text=df_grp["Count"],
-            textposition="auto",
-            marker_color=colors,
+            textposition="auto"
         )
     ]
 )
@@ -595,13 +585,18 @@ fig.show()
 
 
 ```python
+fig = px.colors.qualitative.swatches()
+fig.show()
+```
+
+```python
 # Proprotion bar plot for Market segmentation based on Transmission
 fig = px.histogram(
     df,
     x="Segment",
     color="Transmission",
     barnorm="percent",
-    color_discrete_sequence=["#F38B34", "#349df3", "#8a34f3", "#9df334"],
+    color_discrete_sequence=px.colors.qualitative.Vivid
 )
 fig.update_layout(
     title="Market segmentation based on Transmission",
@@ -622,7 +617,7 @@ fig = px.histogram(
     color="Owner_Type",
     barnorm="percent",
     category_orders={"Owner_Type": ["First", "Second", "Third", "Fourth & Above"]},
-    color_discrete_sequence=["#F38B34", "#349df3", "#8a34f3", "#9df334"],
+    color_discrete_sequence=px.colors.qualitative.Vivid
 )
 fig.update_layout(
     title="Market segmentation based on Owner Type",
@@ -655,7 +650,7 @@ def zone(data):
 
 df["Zone"] = df["Location"].apply(zone)
 
-fig = px.histogram(df, x="Segment", color="Zone", barnorm="percent")
+fig = px.histogram(df, x="Segment", color="Zone", barnorm="percent", color_discrete_sequence=px.colors.qualitative.Vivid)
 fig.update_layout(
     title="Market segmentation based on Zone",
     xaxis=dict(title=""),
@@ -678,7 +673,7 @@ fig = px.histogram(
         "Fuel_Type": ["Diesel", "Petrol", "CNG", "LPG", "Electric"],
         "Segment": ["Low", "Middle", "High"],
     },
-    color_discrete_sequence=["#F38B34", "#349df3", "#8a34f3", "#9df334"],
+    color_discrete_sequence=px.colors.qualitative.Vivid,
 )
 fig.update_layout(
     title="Market segmentation based on Fuel Type",
@@ -689,4 +684,8 @@ fig.update_layout(
     margin=dict(l=100, r=100, t=100, b=50),
 )
 fig.show()
+```
+
+```python
+df.to_csv("../data/processed/after_addfeat.csv", index=False)
 ```
