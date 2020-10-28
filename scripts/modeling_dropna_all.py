@@ -8,11 +8,11 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.6.0
 #   kernelspec:
-#     display_name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
+#     display_name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
 #     metadata:
 #       interpreter:
-#         hash: 8d4d772f21767a3a72f3356b4ab1badff3b831eb21eba306d4ebdf1fe7777d12
-#     name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
+#         hash: 06841a547014e9a81e64c67f55de35f2e794e54238a15280d4c833fbe4275840
+#     name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
 # ---
 
 # %% [markdown] id="IN1jfOnfZIqT"
@@ -71,20 +71,20 @@ X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=
 # ## Encoding
 
 # %% cell_id="00036-c7e04c20-9ab9-48dc-a699-9e7a06582a8c" colab={"base_uri": "https://localhost:8080/", "height": 85} execution={"iopub.execute_input": "2020-10-13T13:29:52.928873Z", "iopub.status.busy": "2020-10-13T13:29:52.927872Z", "iopub.status.idle": "2020-10-13T13:29:53.107446Z", "shell.execute_reply": "2020-10-13T13:29:53.106483Z", "shell.execute_reply.started": "2020-10-13T13:29:52.928873Z"} executionInfo={"elapsed": 776, "status": "ok", "timestamp": 1602555727773, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="_0criLnZIakn" outputId="8b1555e3-4ca7-4bc9-c310-79d7840c1aa1" output_cleared=false tags=[]
-# One hot encoding
-col_to_encode = ['Location', 'Fuel_Type', 'Transmission', 'Owner_Type', 'Brand']
-oh_encoder = ce.OneHotEncoder(cols=col_to_encode,
-                              use_cat_names=True)
-oh_encoder.fit(X_train)
+# # One hot encoding
+# col_to_encode = ['Location', 'Fuel_Type', 'Transmission', 'Owner_Type', 'Brand']
+# oh_encoder = ce.OneHotEncoder(cols=col_to_encode,
+#                               use_cat_names=True)
+# oh_encoder.fit(X_train)
 
-# Encoding train set
-X_train = oh_encoder.transform(X_train)
-# Encoding test set
-X_test = oh_encoder.transform(X_test)
+# # Encoding train set
+# X_train = oh_encoder.transform(X_train)
+# # Encoding test set
+# X_test = oh_encoder.transform(X_test)
 
 # %% colab={"base_uri": "https://localhost:8080/", "height": 85} execution={"iopub.execute_input": "2020-10-13T13:29:53.108444Z", "iopub.status.busy": "2020-10-13T13:29:53.108444Z", "iopub.status.idle": "2020-10-13T13:29:53.178943Z", "shell.execute_reply": "2020-10-13T13:29:53.178943Z", "shell.execute_reply.started": "2020-10-13T13:29:53.108444Z"} executionInfo={"elapsed": 856, "status": "ok", "timestamp": 1602555730207, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="kcMLnvJxZIuD" outputId="0f9c7677-a896-4027-9610-562e404a18b4"
-# Target encoding/One hot encoding untuk feature dengan kategori yang banyak
-col_to_encode = ['Series', 'Type']
+# Target encoding
+col_to_encode = ['Series', 'Type', 'Location', 'Fuel_Type', 'Transmission', 'Owner_Type', 'Brand']
 target_encoder = ce.TargetEncoder(cols=col_to_encode)
 target_encoder.fit(X_train, y_train)
 
@@ -173,28 +173,24 @@ tree_model = DecisionTreeRegressor()
 rf_model = RandomForestRegressor()
 xgb_model = XGBRegressor(objective='reg:squarederror')
 lgb_model = LGBMRegressor()
-cat_model = CatBoostRegressor(verbose=0, iterations=2000)
+cat_model = CatBoostRegressor(silent=True)
 lr_model = LinearRegression()
 lasso_model = Lasso()
 
-models_tree = {'DecisionTreeRegressor' : tree_model,
+models = {'DecisionTreeRegressor' : tree_model,
           'RandomForestRegressor' : rf_model,
           'XGBRegressor' : xgb_model,
           'CatBoostRegressor' : cat_model,
-          'LGBMRegressor' : lgb_model}
-
-models_linear ={'LinearRegression': lr_model,
+          'LGBMRegressor' : lgb_model,
+          'LinearRegression': lr_model,
           'LassoRegression': lasso_model}
 
 # %% [markdown] id="kCSEOF35MoSB"
 # ### Unscaled dataset
 
-# %%
-evaluate_model(models_tree, X_train, X_test, y_train, y_test)
-
 # %% colab={"base_uri": "https://localhost:8080/", "height": 297} execution={"iopub.execute_input": "2020-10-13T13:48:49.354143Z", "iopub.status.busy": "2020-10-13T13:48:49.354143Z", "iopub.status.idle": "2020-10-13T13:49:38.126193Z", "shell.execute_reply": "2020-10-13T13:49:38.125196Z", "shell.execute_reply.started": "2020-10-13T13:48:49.354143Z"} executionInfo={"elapsed": 43072, "status": "ok", "timestamp": 1602556705466, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="DgfsmUm-HqGG" outputId="53cf5ba8-9d0d-44eb-c0f5-0e1c8d77f42f"
 # evaluasi model memakai function
-unscaled = evaluate_model(models_tree, X_train, X_test, y_train, y_test)
+unscaled = evaluate_model(models, X_train, X_test, y_train, y_test)
 
 # %% [markdown] id="AodaQJBNMtob"
 # ### Scaled dataset
@@ -210,7 +206,7 @@ X_test_scaled = scaler.transform(X_test)
 
 # %% execution={"iopub.execute_input": "2020-10-13T13:49:38.203987Z", "iopub.status.busy": "2020-10-13T13:49:38.202989Z", "iopub.status.idle": "2020-10-13T13:50:28.224677Z", "shell.execute_reply": "2020-10-13T13:50:28.223681Z", "shell.execute_reply.started": "2020-10-13T13:49:38.203987Z"}
 # evaluasi model memakai function
-scaled = evaluate_model(models_tree, X_train_scaled, X_test_scaled, y_train, y_test)
+scaled = evaluate_model(models, X_train_scaled, X_test_scaled, y_train, y_test)
 
 # %% [markdown]
 # ### Summarizing

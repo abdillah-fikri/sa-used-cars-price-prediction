@@ -8,11 +8,11 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.6.0
 #   kernelspec:
-#     display_name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
+#     display_name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
 #     metadata:
 #       interpreter:
-#         hash: 8d4d772f21767a3a72f3356b4ab1badff3b831eb21eba306d4ebdf1fe7777d12
-#     name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
+#         hash: 06841a547014e9a81e64c67f55de35f2e794e54238a15280d4c833fbe4275840
+#     name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
 # ---
 
 # %% [markdown]
@@ -205,9 +205,11 @@ import category_encoders as ce
 t_encoder = ce.TargetEncoder()
 df_temp = t_encoder.fit_transform(df.drop(columns=["Price"]), df["Price"])
 df_temp = pd.concat([df_temp, df["Price"]], axis=1)
+df_temp.drop(["Segment", "Zone"], axis=1, inplace=True)
 
+sns.set(font_scale=1.8)
 plt.figure(figsize=(14, 10))
-sns.heatmap(df_temp.corr(), annot=True, linewidths=0.5, fmt=".2f")
+sns.heatmap(df_temp.corr(), annot=True, linewidths=0.5, fmt=".2f", annot_kws={"size": 14})
 plt.show()
 
 # %%
@@ -221,8 +223,10 @@ fig = px.scatter(
     size="Price",
     color="Transmission",
     hover_name="Brand",
-    log_x=True,
-    size_max=25,
+    log_x=False,
+    size_max=30,
+    height=600,
+    width=900
 )
 
 fig.update_layout(title="Engine and Power correlation")
@@ -457,6 +461,30 @@ fig.update_layout(
 )
 fig.show()
 
+# %% [markdown]
+# ## Market Analysis
+
+# %%
+pio.templates.default = "presentation"
+pio.templates
+
+# %%
+market_value = pd.read_csv("../data/raw/market_value.csv")
+market_value
+
+# %%
+fig = px.bar(
+    market_value, x="Year", y="Market Value",
+    color="Market Value", color_continuous_scale=px.colors.sequential.Plasma,
+    title="USED CAR MARKET<br>(Revenue in USD billion, India, 2019-2025)"
+)
+fig.update_layout(
+    xaxis=None,
+    height=500,
+    width=700
+)
+fig.show()
+
 
 # %%
 # Make and plot price segmentation
@@ -480,7 +508,7 @@ fig.show()
 df_segment = df.groupby(["Segment", "Brand"], as_index=False).agg(Count=("Price", "count"))
 df_segment.sort_values(by="Count", ascending=False, inplace=True)
 
-fig = px.pie(df_segment, values="Count", names="Segment", color_discrete_sequence=px.colors.qualitative.Vivid)
+fig = px.pie(df_segment, values="Count", names="Segment")
 fig.update_traces(textposition="inside", textinfo="percent+label")
 fig.update_layout(
     title="Market Segmentation",
@@ -497,7 +525,7 @@ df_low = df_segment[df_segment["Segment"] == "Low"]
 df_low["Brand_2"] = df_low.apply(
     lambda data: "Other" if data["Count"] < 70 else data["Brand"], axis=1
 )
-fig = px.pie(df_low, values="Count", names="Brand_2", color_discrete_sequence=px.colors.qualitative.Vivid)
+fig = px.pie(df_low, values="Count", names="Brand_2")
 fig.update_traces(textposition="inside", textinfo="percent+label")
 fig.update_layout(title="Low", showlegend=False, font_size=16)
 fig.show()
@@ -508,7 +536,7 @@ df_middle = df_segment[df_segment["Segment"] == "Middle"]
 df_middle["Brand_2"] = df_middle.apply(
     lambda data: "Other" if data["Count"] < 35 else data["Brand"], axis=1
 )
-fig = px.pie(df_middle, values="Count", names="Brand_2", color_discrete_sequence=px.colors.qualitative.Vivid)
+fig = px.pie(df_middle, values="Count", names="Brand_2")
 fig.update_traces(textposition="inside", textinfo="percent+label")
 fig.update_layout(title="Middle", showlegend=False, font_size=16)
 fig.show()
@@ -519,7 +547,7 @@ df_high = df_segment[df_segment["Segment"] == "High"]
 df_high["Brand_2"] = df_high.apply(
     lambda data: "Other" if data["Count"] < 15 else data["Brand"], axis=1
 )
-fig = px.pie(df_high, values="Count", names="Brand_2", color_discrete_sequence=px.colors.qualitative.Vivid)
+fig = px.pie(df_high, values="Count", names="Brand_2")
 fig.update_traces(textposition="inside", textinfo="percent+label")
 fig.update_layout(title="High", showlegend=False, font_size=16)
 fig.show()
@@ -560,14 +588,13 @@ fig = px.histogram(
     x="Segment",
     color="Transmission",
     barnorm="percent",
-    color_discrete_sequence=px.colors.qualitative.Vivid
 )
 fig.update_layout(
     title="Market segmentation based on Transmission",
-    xaxis=dict(title=""),
-    yaxis=dict(title="Proportion"),
+    xaxis=None,
+    yaxis=None,
     height=500,
-    width=800,
+    width=700,
     margin=dict(l=100, r=100, t=100, b=50),
 )
 fig.show()
@@ -579,15 +606,14 @@ fig = px.histogram(
     x="Segment",
     color="Owner_Type",
     barnorm="percent",
-    category_orders={"Owner_Type": ["First", "Second", "Third", "Fourth & Above"]},
-    color_discrete_sequence=px.colors.qualitative.Vivid
+    category_orders={"Owner_Type": ["First", "Second", "Third", "Fourth & Above"]}
 )
 fig.update_layout(
     title="Market segmentation based on Owner Type",
     xaxis=dict(title=""),
     yaxis=dict(title="Proportion"),
     height=500,
-    width=800,
+    width=700,
     margin=dict(l=100, r=100, t=100, b=50),
 )
 fig.show()
@@ -613,13 +639,13 @@ def zone(data):
 
 df["Zone"] = df["Location"].apply(zone)
 
-fig = px.histogram(df, x="Segment", color="Zone", barnorm="percent", color_discrete_sequence=px.colors.qualitative.Vivid)
+fig = px.histogram(df, x="Segment", color="Zone", barnorm="percent")
 fig.update_layout(
     title="Market segmentation based on Zone",
-    xaxis=dict(title=""),
-    yaxis=dict(title="Proportion"),
+    xaxis=None,
+    yaxis=None,
     height=500,
-    width=800,
+    width=700,
     margin=dict(l=100, r=100, t=100, b=50),
 )
 fig.show()
@@ -635,17 +661,16 @@ fig = px.histogram(
         "Fuel_Type": ["Diesel", "Petrol", "CNG", "LPG", "Electric"],
         "Segment": ["Low", "Middle", "High"],
     },
-    color_discrete_sequence=px.colors.qualitative.Vivid,
 )
 fig.update_layout(
     title="Market segmentation based on Fuel Type",
     xaxis=dict(title=""),
     yaxis=dict(title="Proportion"),
     height=500,
-    width=800,
+    width=700,
     margin=dict(l=100, r=100, t=100, b=50),
 )
 fig.show()
 
-# %%
-df.to_csv("../data/processed/after_addfeat.csv", index=False)
+# %% [markdown]
+#

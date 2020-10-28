@@ -51,24 +51,6 @@ df.info()
 df = df[~(df.Kilometers_Driven > 1e6)]
 df.shape
 
-
-# %% [markdown]
-# ## Feature Enginering
-
-# %%
-# Create price zone feature from Location
-def zone(data):
-    if data in ["Kolkata"]:
-        return "Eastern"
-    elif data in ["Delhi", "Jaipur"]:
-        return "Northern"
-    elif data in ["Ahmedabad", "Mumbai", "Pune"]:
-        return "Western"
-    else:
-        return "Southern"
-
-df["Zone"] = df["Location"].apply(zone)
-
 # %% [markdown] id="yEgVyyNSZIt9"
 # ## Train test split
 
@@ -82,20 +64,20 @@ X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=
 # ## Encoding
 
 # %% cell_id="00036-c7e04c20-9ab9-48dc-a699-9e7a06582a8c" execution={"iopub.execute_input": "2020-10-15T12:50:17.900538Z", "iopub.status.busy": "2020-10-15T12:50:17.899538Z", "iopub.status.idle": "2020-10-15T12:50:18.100999Z", "shell.execute_reply": "2020-10-15T12:50:18.100001Z", "shell.execute_reply.started": "2020-10-15T12:50:17.900538Z"} id="_0criLnZIakn" output_cleared=false tags=[]
-# One hot encoding
-col_to_encode = ['Location', 'Fuel_Type', 'Transmission', 'Owner_Type', 'Brand', 'Zone']
-oh_encoder = ce.OneHotEncoder(cols=col_to_encode,
-                              use_cat_names=True)
-oh_encoder.fit(X_train)
+# # One hot encoding
+# col_to_encode = ['Location', 'Fuel_Type', 'Transmission', 'Owner_Type', 'Brand']
+# oh_encoder = ce.OneHotEncoder(cols=col_to_encode,
+#                               use_cat_names=True)
+# oh_encoder.fit(X_train)
 
-# Encoding train set
-X_train = oh_encoder.transform(X_train)
-# Encoding test set
-X_test = oh_encoder.transform(X_test)
+# # Encoding train set
+# X_train = oh_encoder.transform(X_train)
+# # Encoding test set
+# X_test = oh_encoder.transform(X_test)
 
 # %% execution={"iopub.execute_input": "2020-10-15T12:50:18.102994Z", "iopub.status.busy": "2020-10-15T12:50:18.101997Z", "iopub.status.idle": "2020-10-15T12:50:18.179789Z", "shell.execute_reply": "2020-10-15T12:50:18.178825Z", "shell.execute_reply.started": "2020-10-15T12:50:18.102994Z"} id="kcMLnvJxZIuD"
-# Target encoding/One hot encoding untuk feature dengan kategori yang banyak
-col_to_encode = ['Series', 'Type']
+# Target encoding
+col_to_encode = ['Series', 'Type', 'Location', 'Fuel_Type', 'Transmission', 'Owner_Type', 'Brand']
 target_encoder = ce.TargetEncoder(cols=col_to_encode)
 target_encoder.fit(X_train, y_train)
 
@@ -248,10 +230,6 @@ scaled = evaluate_model(models, X_train_full_scaled, X_test_full_scaled, y_train
 # %% execution={"iopub.execute_input": "2020-10-15T12:52:30.847826Z", "iopub.status.busy": "2020-10-15T12:52:30.847826Z", "iopub.status.idle": "2020-10-15T12:52:30.863806Z", "shell.execute_reply": "2020-10-15T12:52:30.862807Z", "shell.execute_reply.started": "2020-10-15T12:52:30.847826Z"} id="bg_vcQxLLg0n"
 unscaled['Dataset Version'] = 'imputed + all + unscaled'
 scaled['Dataset Version'] = 'imputed + all + scaled'
-
-# %%
-imputed_all = pd.concat([unscaled, scaled], axis=0)
-imputed_all
 
 # %% execution={"iopub.execute_input": "2020-10-15T12:52:30.865799Z", "iopub.status.busy": "2020-10-15T12:52:30.865799Z", "iopub.status.idle": "2020-10-15T12:52:30.911677Z", "shell.execute_reply": "2020-10-15T12:52:30.910679Z", "shell.execute_reply.started": "2020-10-15T12:52:30.865799Z"}
 imputed_all = pd.concat([unscaled, scaled], axis=0)
