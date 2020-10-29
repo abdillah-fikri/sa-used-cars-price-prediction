@@ -8,11 +8,11 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.6.0
 #   kernelspec:
-#     display_name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
+#     display_name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
 #     metadata:
 #       interpreter:
-#         hash: 06841a547014e9a81e64c67f55de35f2e794e54238a15280d4c833fbe4275840
-#     name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
+#         hash: 9147bcb9e0785203a659ab3390718fd781c9994811db246717fd6ffdcf1dd807
+#     name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
 # ---
 
 # %% [markdown]
@@ -480,8 +480,8 @@ fig = px.bar(
 )
 fig.update_layout(
     xaxis=None,
-    height=500,
-    width=700
+    height=500*1.2,
+    width=700*1.2
 )
 fig.show()
 

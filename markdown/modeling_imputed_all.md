@@ -8,9 +8,11 @@ jupyter:
       format_version: '1.2'
       jupytext_version: 1.6.0
   kernelspec:
-    display_name: Python 3
-    language: python
-    name: python3
+    display_name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
+    metadata:
+      interpreter:
+        hash: 9147bcb9e0785203a659ab3390718fd781c9994811db246717fd6ffdcf1dd807
+    name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
 ---
 
 # Data Importing
@@ -259,4 +261,14 @@ imputed_all
 
 ```python execution={"iopub.execute_input": "2020-10-15T12:52:30.916663Z", "iopub.status.busy": "2020-10-15T12:52:30.916663Z", "iopub.status.idle": "2020-10-15T12:52:30.943590Z", "shell.execute_reply": "2020-10-15T12:52:30.942594Z", "shell.execute_reply.started": "2020-10-15T12:52:30.916663Z"}
 imputed_all.to_csv('../data/processed/summary_imputed_all.csv')
+```
+
+```python
+model = LGBMRegressor()
+model.fit(X_train_full, y_train)
+lgb.plot_importance(model, figsize=(9,6), dpi=500)
+```
+
+```python
+lgb.plot_tree(model, figsize=(8*4,6*4), dpi=300, )
 ```

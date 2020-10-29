@@ -8,11 +8,11 @@ jupyter:
       format_version: '1.2'
       jupytext_version: 1.6.0
   kernelspec:
-    display_name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
+    display_name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
     metadata:
       interpreter:
-        hash: 06841a547014e9a81e64c67f55de35f2e794e54238a15280d4c833fbe4275840
-    name: 'Python 3.8.6 64-bit (''venv-ds'': venv)'
+        hash: 9147bcb9e0785203a659ab3390718fd781c9994811db246717fd6ffdcf1dd807
+    name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
 ---
 
 <!-- #region id="IN1jfOnfZIqT" -->
@@ -242,4 +242,87 @@ dropna_all
 
 ```python
 dropna_all.to_csv('../data/processed/summary_dropna_all.csv')
+```
+
+## Hyperparameter Tuning
+
+```python
+param_xgb = {
+    'objective': 'reg:squarederror',
+    'tree_method': 'hist',
+    'learning_rate': 0.004805425056468563,
+    'colsample_bytree': 0.9607715839820206,
+    'max_depth': 10,
+    'min_child_weight': 3,
+    'subsample': 0.2682342941392732
+    }
+
+xgb_final = XGBRegressor(**param_xgb, n_estimators=2210)
+
+param_lgb = {
+    "objective": "regression",
+        "metric": "rmse",
+        "verbosity": -1,
+        "boosting_type": "gbdt",
+        'learning_rate': 0.008795242663833346,
+        'bagging_fraction': 0.4773095555313027,
+        'bagging_freq': 2,
+        'feature_fraction': 0.73183944913956,
+        'lambda_l1': 0.00019344183501726273,
+        'lambda_l2': 0.01542553262348072,
+        'max_depth': 27,
+        'min_child_samples': 7,
+        'num_leaves': 131
+        }
+
+lgb_final = LGBMRegressor(**param_lgb, n_estimators=1991)
+
+models = {'XGBRegressor (Tuned)': xgb_final,
+          'LGBMRegressor (Tuned)' : lgb_final}
+```
+
+```python
+evaluate_model(models, X_train, X_test, y_train, y_test)
+```
+
+```python
+param_xgb = {
+        'objective': 'reg:squarederror',
+        'tree_method': 'hist',
+        'learning_rate': 0.005,
+'colsample_bytree': 0.9607715839820206,
+ 'max_depth': 10,
+ 'min_child_weight': 3,
+ 'subsample': 0.2682342941392732
+    }
+
+xgb_final = XGBRegressor(**param_xgb, n_estimators=2129)
+
+param_lgb = {
+        "objective": "regression",
+        "verbosity": -1,
+        "boosting_type": "gbdt",
+        'learning_rate': 0.009996749542763148,
+        'bagging_fraction': 0.7338793804704574,
+ 'bagging_freq': 2,
+ 'feature_fraction': 0.6943579618122041,
+ 'lambda_l1': 2.917613743207072e-05,
+ 'lambda_l2': 7.207067035206764e-05,
+ 'max_depth': 15,
+ 'min_child_samples': 8,
+ 'num_leaves': 68
+    }
+
+lgb_final = LGBMRegressor(**param_lgb, n_estimators=3149)
+
+models = {'XGBRegressor (Tuned)': xgb_final,
+          'LGBMRegressor (Tuned)' : lgb_final}
+```
+
+```python
+evaluate_model(models, X_train, X_test, y_train, y_test)
+```
+
+```python
+
 ```
