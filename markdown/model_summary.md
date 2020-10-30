@@ -134,6 +134,8 @@ fig.show()
 ## Best 5 Models
 <!-- #endregion -->
 
+### Before Tuning
+
 ```python
 df_all_ver[df_all_ver["Dataset Version"].str.contains("unscaled")].head(10)
 ```
@@ -210,6 +212,94 @@ fig.add_trace(go.Bar(
 fig.add_trace(go.Bar(
     x=best_10_before['Model'], y=best_10_before['Test R2'],
     text=best_10_before['Test R2'], textposition='auto',
+    name='Test R2'
+))
+fig.update_layout(
+    title='Best 5 Model\'s R-Squared Score',
+    xaxis=None,
+    yaxis=dict(title='R2 Score'),
+    height=500,
+    width=600,
+    margin=dict(l=100, r=100, t=100, b=120),
+    font_size=17,
+    
+)
+fig.show()
+```
+
+### After Tuning
+
+```python
+df_tuned = pd.read_csv("../data/processed/tuning_dropna_all (XGB+LGB).csv")
+df_tuned
+```
+
+```python
+df_tuned_top = round(df_tuned.iloc[[0,2]], 3)
+df_tuned_top["Model"] = df_tuned_top["Model"].apply(lambda x: x.split()[0]) + "_Tuned (Ver1)"
+df_tuned_top["Model"] = df_tuned_top["Model"].str.replace("LGBMRegressor", "LightGBM")
+df_tuned_top["Model"] = df_tuned_top["Model"].str.replace("XGBRegressor", "XGBoost")
+df_tuned_top
+```
+
+```python
+best_5_after = pd.concat([best_10_before, df_tuned_top], axis=0)
+best_5_after = best_5_after.sort_values(by="CV RMSE").head().reset_index(drop=True)
+best_5_after
+```
+
+```python
+pio.templates.default = "plotly"
+pio.templates
+```
+
+```python
+fig = go.Figure()
+
+fig.add_trace(go.Bar(
+    x=best_5_after['Model'], y=best_5_after['Train RMSE'],
+    text=best_5_after['Train RMSE'], textposition='auto',
+    name='Train RMSE'
+))
+fig.add_trace(go.Bar(
+    x=best_5_after['Model'], y=best_5_after['CV RMSE'],
+    text=best_5_after['CV RMSE'], textposition='auto',
+    name='CV RMSE'
+))
+fig.add_trace(go.Bar(
+    x=best_5_after['Model'], y=best_5_after['Test RMSE'],
+    text=best_5_after['Test RMSE'], textposition='auto',
+    name='Test RMSE'
+))
+fig.update_layout(
+    title='Best 5 Model\'s RMSE Score',
+    xaxis=None,
+    yaxis=dict(title='RMSE Score'),
+    height=500,
+    width=600,
+    margin=dict(l=100, r=100, t=100, b=120),
+    font_size=17,
+    
+)
+fig.show()
+```
+
+```python
+fig = go.Figure()
+
+fig.add_trace(go.Bar(
+    x=best_5_after['Model'], y=best_5_after['Train R2'],
+    text=best_5_after['Train R2'], textposition='auto',
+    name='Train R2'
+))
+fig.add_trace(go.Bar(
+    x=best_5_after['Model'], y=best_5_after['CV R2'],
+    text=best_5_after['CV R2'], textposition='auto',
+    name='CV R2'
+))
+fig.add_trace(go.Bar(
+    x=best_5_after['Model'], y=best_5_after['Test R2'],
+    text=best_5_after['Test R2'], textposition='auto',
     name='Test R2'
 ))
 fig.update_layout(
