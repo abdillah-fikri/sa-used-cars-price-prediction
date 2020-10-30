@@ -33,6 +33,7 @@ ver4 = pd.read_csv('../data/processed/summary_imputed_selected.csv')
 df_all_ver = pd.concat([ver1, ver2, ver3, ver4], axis=0)
 df_all_ver.sort_values(by='CV RMSE', inplace=True)
 df_all_ver = round(df_all_ver, 3)
+df_all_ver = df_all_ver[~((df_all_ver["CV RMSE"] > 100) | (df_all_ver["Test RMSE"] > 100))]
 df_all_ver.head(10)
 ```
 
@@ -62,7 +63,7 @@ fig.add_trace(go.Bar(
     name='Test RMSE'
 ))
 fig.update_layout(
-    title='Average RMSE Score <br>(7 Models with 8 Dataset Version)',
+    title='Average RMSE Score of Base Model (on 8 dataset version each)',
     xaxis=None,
     yaxis=dict(title='RMSE Score'),
     height=500,
@@ -102,7 +103,11 @@ fig = px.bar(
     log_y=True
 )
 
-fig.update_layout(title='Training Time on Cross Validation 5 Folds')
+fig.update_layout(
+    title='Training Time on Cross Validation 5 Folds',
+    height=500,
+    width=1200
+)
 
 fig.show()
 ```
@@ -116,7 +121,11 @@ order = {'Dataset Version': ['dropna + all + unscaled', 'dropna + all + scaled',
 fig = px.bar(filtered, x='Model', y='Test RMSE', color='Dataset Version',
              barmode='group', category_orders=order, text='Test RMSE')
 
-fig.update_layout(title='Model RMSE Score on Test Set (all features only)')
+fig.update_layout(
+    title='Model RMSE Score on Test Set (all features only)',
+    height=500,
+    width=1200
+)
 
 fig.show()
 ```
