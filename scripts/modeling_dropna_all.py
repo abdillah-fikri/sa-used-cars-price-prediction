@@ -19,24 +19,18 @@
 # # Data Importing
 
 # %% cell_id="00035-adb3a37b-199a-4d0e-ba89-ea8c10843673" colab={"base_uri": "https://localhost:8080/", "height": 111} execution={"iopub.execute_input": "2020-10-13T13:29:52.833962Z", "iopub.status.busy": "2020-10-13T13:29:52.833962Z", "iopub.status.idle": "2020-10-13T13:29:52.864878Z", "shell.execute_reply": "2020-10-13T13:29:52.863881Z", "shell.execute_reply.started": "2020-10-13T13:29:52.833962Z"} executionInfo={"elapsed": 5713, "status": "ok", "timestamp": 1602555650537, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="bKob_zWgIakl" outputId="6062b1e9-6be6-48c6-f955-0d621e64a663" output_cleared=false tags=[]
-import pandas as pd
 import numpy as np
+import pandas as pd
 import category_encoders as ce
-import miceforest as mf
-import optuna
-import lightgbm as lgb
-import xgboost as xgb
 
-from utils import *
-from sklearn.model_selection import train_test_split, cross_val_score, cross_validate, KFold
+from utils import null_checker, evaluate_model
+from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 from catboost import CatBoostRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import LinearRegression, Lasso
-from sklearn import metrics
-from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LinearRegression, Lasso, Ridge
 
 # %%
 df = pd.read_csv('../data/processed/after_prep.csv')
@@ -62,108 +56,59 @@ null_checker(df)
 # ## Train test split
 
 # %% execution={"iopub.execute_input": "2020-10-13T13:29:52.911913Z", "iopub.status.busy": "2020-10-13T13:29:52.911913Z", "iopub.status.idle": "2020-10-13T13:29:52.926873Z", "shell.execute_reply": "2020-10-13T13:29:52.925908Z", "shell.execute_reply.started": "2020-10-13T13:29:52.911913Z"} executionInfo={"elapsed": 875, "status": "ok", "timestamp": 1602555655449, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="nPxFt6bSZIt-"
-# melakukan train test split di awal untuk mencegah data bocor ke test set saat dilakukan encoding/imputation
-features = df.drop(columns=['Price'])
-target = df['Price']
-X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.25, random_state=0)
+# melakukan train test split di awal untuk mencegah data leakage
+X = df.drop(columns=['Price'])
+y = df['Price']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)
 
 # %% [markdown] id="oxqsMHrKZIuA"
 # ## Encoding
 
 # %% cell_id="00036-c7e04c20-9ab9-48dc-a699-9e7a06582a8c" colab={"base_uri": "https://localhost:8080/", "height": 85} execution={"iopub.execute_input": "2020-10-13T13:29:52.928873Z", "iopub.status.busy": "2020-10-13T13:29:52.927872Z", "iopub.status.idle": "2020-10-13T13:29:53.107446Z", "shell.execute_reply": "2020-10-13T13:29:53.106483Z", "shell.execute_reply.started": "2020-10-13T13:29:52.928873Z"} executionInfo={"elapsed": 776, "status": "ok", "timestamp": 1602555727773, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="_0criLnZIakn" outputId="8b1555e3-4ca7-4bc9-c310-79d7840c1aa1" output_cleared=false tags=[]
-# # One hot encoding
-# col_to_encode = ['Location', 'Fuel_Type', 'Transmission', 'Owner_Type', 'Brand']
-# oh_encoder = ce.OneHotEncoder(cols=col_to_encode,
-#                               use_cat_names=True)
-# oh_encoder.fit(X_train)
-
-# # Encoding train set
-# X_train = oh_encoder.transform(X_train)
-# # Encoding test set
-# X_test = oh_encoder.transform(X_test)
-
-# %% colab={"base_uri": "https://localhost:8080/", "height": 85} execution={"iopub.execute_input": "2020-10-13T13:29:53.108444Z", "iopub.status.busy": "2020-10-13T13:29:53.108444Z", "iopub.status.idle": "2020-10-13T13:29:53.178943Z", "shell.execute_reply": "2020-10-13T13:29:53.178943Z", "shell.execute_reply.started": "2020-10-13T13:29:53.108444Z"} executionInfo={"elapsed": 856, "status": "ok", "timestamp": 1602555730207, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="kcMLnvJxZIuD" outputId="0f9c7677-a896-4027-9610-562e404a18b4"
-# Target encoding
-col_to_encode = ['Series', 'Type', 'Location', 'Fuel_Type', 'Transmission', 'Owner_Type', 'Brand']
-target_encoder = ce.TargetEncoder(cols=col_to_encode)
-target_encoder.fit(X_train, y_train)
+# Define category mapping for label encoding
+mapping_owner = {
+    'First': 1, 
+    'Second': 2, 
+    'Third': 3, 
+    'Fourth & Above': 4
+}
+mapping_trans = {
+    'Manual': 0, 
+    'Automatic': 1, 
+}
 
 # Encoding train set
-X_train = target_encoder.transform(X_train)
+X_train["Owner_Type"] = X_train["Owner_Type"].map(mapping_owner)
+X_train["Transmission"] = X_train["Transmission"].map(mapping_trans)
 # Encoding test set
-X_test = target_encoder.transform(X_test)
+X_test["Owner_Type"] = X_test["Owner_Type"].map(mapping_owner)
+X_test["Transmission"] = X_test["Transmission"].map(mapping_trans)
 
+# %%
+# One hot encoding for low cardinality feature + Brand
+col_to_encode = ['Location', 'Fuel_Type', 'Brand']
+oh_encoder = ce.OneHotEncoder(cols=col_to_encode,
+                              use_cat_names=True)
+oh_encoder.fit(X_train)
+
+# Encoding train set
+X_train = oh_encoder.transform(X_train)
+# Encoding test set
+X_test = oh_encoder.transform(X_test)
+
+# %% colab={"base_uri": "https://localhost:8080/", "height": 85} execution={"iopub.execute_input": "2020-10-13T13:29:53.108444Z", "iopub.status.busy": "2020-10-13T13:29:53.108444Z", "iopub.status.idle": "2020-10-13T13:29:53.178943Z", "shell.execute_reply": "2020-10-13T13:29:53.178943Z", "shell.execute_reply.started": "2020-10-13T13:29:53.108444Z"} executionInfo={"elapsed": 856, "status": "ok", "timestamp": 1602555730207, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="kcMLnvJxZIuD" outputId="0f9c7677-a896-4027-9610-562e404a18b4"
+# Target encoding for high cardinality feature
+col_to_encode = X_train.select_dtypes("object").columns
+encoder = ce.TargetEncoder(cols=col_to_encode)
+encoder.fit(X_train, y_train)
+
+# Encoding train set
+X_train = encoder.transform(X_train)
+# Encoding test set
+X_test = encoder.transform(X_test)
 
 # %% [markdown] id="wV2sjkqEZIup"
 # # Modeling
-
-# %% [markdown] id="4g_nWqotKl6_"
-# ## Functions
-
-# %% execution={"iopub.execute_input": "2020-10-13T13:29:53.181043Z", "iopub.status.busy": "2020-10-13T13:29:53.181043Z", "iopub.status.idle": "2020-10-13T13:29:53.195221Z", "shell.execute_reply": "2020-10-13T13:29:53.194224Z", "shell.execute_reply.started": "2020-10-13T13:29:53.181043Z"} executionInfo={"elapsed": 984, "status": "ok", "timestamp": 1602555740977, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="Qp4QHIuFZIuq"
-def get_cv_score(models, X_train, y_train):
-    
-    cv = KFold(n_splits=5, shuffle=True, random_state=0)
-    summary = []
-    for label, model in models.items():
-        cv_results = cross_validate(model, X_train, y_train, cv=cv, 
-                                    scoring=['r2',
-                                             'neg_root_mean_squared_error',
-                                             'neg_mean_absolute_error'])
-        
-        temp = pd.DataFrame(cv_results).copy()
-        temp['Model'] = label
-        summary.append(temp)
-    
-    summary = pd.concat(summary)
-    summary = summary.groupby('Model').mean()
-    
-    summary.drop(columns=['fit_time', 'score_time'], inplace=True)
-    summary.columns = ['CV R2', 'CV RMSE', 'CV MAE']
-    summary[['CV RMSE', 'CV MAE']] = summary[['CV RMSE', 'CV MAE']] * -1
-    
-    return summary
-
-
-# %% execution={"iopub.execute_input": "2020-10-13T13:29:53.198250Z", "iopub.status.busy": "2020-10-13T13:29:53.197220Z", "iopub.status.idle": "2020-10-13T13:29:53.212177Z", "shell.execute_reply": "2020-10-13T13:29:53.210182Z", "shell.execute_reply.started": "2020-10-13T13:29:53.198250Z"} executionInfo={"elapsed": 837, "status": "ok", "timestamp": 1602556656550, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="BXEr8F5VZIu0"
-def evaluate_model(models, X_train, X_test, y_train, y_test):
-
-    summary = {'Model':[], 'Train R2':[], 'Train RMSE':[], 'Train MAE':[],
-               'Test R2':[], 'Test RMSE':[], 'Test MAE':[]}
-
-    for label, model in models.items():
-        model.fit(X_train, y_train)
-
-        y_train_pred = model.predict(X_train)
-        y_test_pred = model.predict(X_test)
-
-        summary['Model'].append(label)
-
-        summary['Train R2'].append(
-            metrics.r2_score(y_train, y_train_pred))
-        summary['Train RMSE'].append(
-            np.sqrt(metrics.mean_squared_error(y_train, y_train_pred)))
-        summary['Train MAE'].append(
-            metrics.mean_absolute_error(y_train, y_train_pred))
-
-        summary['Test R2'].append(
-            metrics.r2_score(y_test, y_test_pred))
-        summary['Test RMSE'].append(
-            np.sqrt(metrics.mean_squared_error(y_test, y_test_pred)))
-        summary['Test MAE'].append(
-            metrics.mean_absolute_error(y_test, y_test_pred))
-    
-    summary = pd.DataFrame(summary)
-    summary.set_index('Model', inplace=True)
-
-    cv_scores = get_cv_score(models, X_train, y_train)
-    summary = summary.join(cv_scores)
-    summary = summary[['Train R2', 'CV R2', 'Test R2',
-                       'Train RMSE', 'CV RMSE', 'Test RMSE',
-                       'Train MAE', 'CV MAE', 'Test MAE']]
-    
-    return round(summary.sort_values(by='Test RMSE'), 4)
-
 
 # %% [markdown] id="aR4Sp3UCZIu2"
 # ## Base Model
@@ -171,19 +116,21 @@ def evaluate_model(models, X_train, X_test, y_train, y_test):
 # %% execution={"iopub.execute_input": "2020-10-13T13:34:36.180450Z", "iopub.status.busy": "2020-10-13T13:34:36.179421Z", "iopub.status.idle": "2020-10-13T13:34:36.198368Z", "shell.execute_reply": "2020-10-13T13:34:36.197370Z", "shell.execute_reply.started": "2020-10-13T13:34:36.180450Z"} executionInfo={"elapsed": 802, "status": "ok", "timestamp": 1602556659028, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="Oux2OxeDZIu2"
 tree_model = DecisionTreeRegressor()
 rf_model = RandomForestRegressor()
-xgb_model = XGBRegressor(objective='reg:squarederror')
+xgb_model = XGBRegressor()
 lgb_model = LGBMRegressor()
 cat_model = CatBoostRegressor(silent=True)
 lr_model = LinearRegression()
 lasso_model = Lasso()
+ridge_model = Ridge()
 
-models = {'DecisionTreeRegressor' : tree_model,
-          'RandomForestRegressor' : rf_model,
-          'XGBRegressor' : xgb_model,
-          'CatBoostRegressor' : cat_model,
-          'LGBMRegressor' : lgb_model,
-          'LinearRegression': lr_model,
-          'LassoRegression': lasso_model}
+models = {'DecisionTree' : tree_model,
+          'RandomForest' : rf_model,
+          'XGBoost' : xgb_model,
+          'CatBoost' : cat_model,
+          'LightGBM' : lgb_model,
+          'Linear': lr_model,
+          'Lasso': lasso_model,
+          'Ridge': ridge_model}
 
 # %% [markdown] id="kCSEOF35MoSB"
 # ### Unscaled dataset
@@ -221,81 +168,3 @@ dropna_all
 
 # %%
 dropna_all.to_csv('../data/processed/summary_dropna_all.csv')
-
-# %% [markdown]
-# ## Hyperparameter Tuning
-
-# %%
-param_xgb = {
-    'objective': 'reg:squarederror',
-    'tree_method': 'hist',
-    'learning_rate': 0.004805425056468563,
-    'colsample_bytree': 0.9607715839820206,
-    'max_depth': 10,
-    'min_child_weight': 3,
-    'subsample': 0.2682342941392732
-    }
-
-xgb_final = XGBRegressor(**param_xgb, n_estimators=2210)
-
-param_lgb = {
-    "objective": "regression",
-        "metric": "rmse",
-        "verbosity": -1,
-        "boosting_type": "gbdt",
-        'learning_rate': 0.008795242663833346,
-        'bagging_fraction': 0.4773095555313027,
-        'bagging_freq': 2,
-        'feature_fraction': 0.73183944913956,
-        'lambda_l1': 0.00019344183501726273,
-        'lambda_l2': 0.01542553262348072,
-        'max_depth': 27,
-        'min_child_samples': 7,
-        'num_leaves': 131
-        }
-
-lgb_final = LGBMRegressor(**param_lgb, n_estimators=1991)
-
-models = {'XGBRegressor (Tuned)': xgb_final,
-          'LGBMRegressor (Tuned)' : lgb_final}
-
-# %%
-evaluate_model(models, X_train, X_test, y_train, y_test)
-
-# %%
-param_xgb = {
-        'objective': 'reg:squarederror',
-        'tree_method': 'hist',
-        'learning_rate': 0.005,
-'colsample_bytree': 0.9607715839820206,
- 'max_depth': 10,
- 'min_child_weight': 3,
- 'subsample': 0.2682342941392732
-    }
-
-xgb_final = XGBRegressor(**param_xgb, n_estimators=2129)
-
-param_lgb = {
-        "objective": "regression",
-        "verbosity": -1,
-        "boosting_type": "gbdt",
-        'learning_rate': 0.009996749542763148,
-        'bagging_fraction': 0.7338793804704574,
- 'bagging_freq': 2,
- 'feature_fraction': 0.6943579618122041,
- 'lambda_l1': 2.917613743207072e-05,
- 'lambda_l2': 7.207067035206764e-05,
- 'max_depth': 15,
- 'min_child_samples': 8,
- 'num_leaves': 68
-    }
-
-lgb_final = LGBMRegressor(**param_lgb, n_estimators=3149)
-
-models = {'XGBRegressor (Tuned)': xgb_final,
-          'LGBMRegressor (Tuned)' : lgb_final}
-
-# %%
-evaluate_model(models, X_train, X_test, y_train, y_test)
-
-# %%

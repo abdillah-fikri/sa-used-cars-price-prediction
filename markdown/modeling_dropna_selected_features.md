@@ -8,9 +8,11 @@ jupyter:
       format_version: '1.2'
       jupytext_version: 1.6.0
   kernelspec:
-    display_name: Python 3
-    language: python
-    name: python3
+    display_name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
+    metadata:
+      interpreter:
+        hash: 9147bcb9e0785203a659ab3390718fd781c9994811db246717fd6ffdcf1dd807
+    name: 'Python 3.8.5 64-bit (''ds_env'': conda)'
 ---
 
 <!-- #region id="IN1jfOnfZIqT" -->
@@ -18,24 +20,18 @@ jupyter:
 <!-- #endregion -->
 
 ```python execution={"iopub.execute_input": "2020-10-08T14:24:16.108907Z", "iopub.status.busy": "2020-10-08T14:24:16.107910Z", "iopub.status.idle": "2020-10-08T14:24:21.655591Z", "shell.execute_reply": "2020-10-08T14:24:21.651602Z", "shell.execute_reply.started": "2020-10-08T14:24:16.108907Z"} id="vBMQYoVFZIqV"
-import pandas as pd
 import numpy as np
+import pandas as pd
 import category_encoders as ce
-import miceforest as mf
-import optuna
-import lightgbm as lgb
-import xgboost as xgb
 
-from utils import *
-from sklearn.model_selection import train_test_split, cross_val_score, cross_validate, KFold
+from utils import null_checker, evaluate_model
+from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 from catboost import CatBoostRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import LinearRegression, Lasso
-from sklearn import metrics
-from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LinearRegression, Lasso, Ridge
 ```
 
 ```python
@@ -68,10 +64,10 @@ null_checker(df)
 <!-- #endregion -->
 
 ```python execution={"iopub.execute_input": "2020-10-08T14:24:51.747335Z", "iopub.status.busy": "2020-10-08T14:24:51.747335Z", "iopub.status.idle": "2020-10-08T14:24:51.759305Z", "shell.execute_reply": "2020-10-08T14:24:51.757306Z", "shell.execute_reply.started": "2020-10-08T14:24:51.747335Z"} id="nPxFt6bSZIt-" outputId="50d71945-3c1c-4fe9-bb86-b9ae483a319b"
-# melakukan train test split di awal untuk mencegah data bocor ke test set saat dilakukan encoding/imputation
-features = df.drop(columns=['Price'])
-target = df['Price']
-X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.25, random_state=0)
+# melakukan train test split di awal untuk mencegah data leakage
+X = df.drop(columns=['Price'])
+y = df['Price']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)
 ```
 
 <!-- #region id="oxqsMHrKZIuA" -->
@@ -79,28 +75,49 @@ X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=
 <!-- #endregion -->
 
 ```python
-# encodes = ['Location','Fuel_Type','Transmission','Owner_Type', 'Brand']
-# encoder = ce.OneHotEncoder(cols=encodes,
-#                           use_cat_names=True)
-# encoder.fit(X_train)
+# Define category mapping for label encoding
+mapping_owner = {
+    'First': 1, 
+    'Second': 2, 
+    'Third': 3, 
+    'Fourth & Above': 4
+}
+mapping_trans = {
+    'Manual': 0, 
+    'Automatic': 1, 
+}
 
-# # encoding train set
-# X_train = encoder.transform(X_train)
-
-# # encoding test set
-# X_test = encoder.transform(X_test)
+# Encoding train set
+X_train["Owner_Type"] = X_train["Owner_Type"].map(mapping_owner)
+X_train["Transmission"] = X_train["Transmission"].map(mapping_trans)
+# Encoding test set
+X_test["Owner_Type"] = X_test["Owner_Type"].map(mapping_owner)
+X_test["Transmission"] = X_test["Transmission"].map(mapping_trans)
 ```
 
 ```python execution={"iopub.execute_input": "2020-10-08T14:24:52.214085Z", "iopub.status.busy": "2020-10-08T14:24:52.213088Z", "iopub.status.idle": "2020-10-08T14:24:52.385628Z", "shell.execute_reply": "2020-10-08T14:24:52.384657Z", "shell.execute_reply.started": "2020-10-08T14:24:52.213088Z"} id="kcMLnvJxZIuD"
-# Target encoding
-col_to_encode = ['Series', 'Type', 'Location', 'Fuel_Type', 'Transmission', 'Owner_Type', 'Brand']
-target_encoder = ce.TargetEncoder(cols=col_to_encode)
-target_encoder.fit(X_train, y_train)
+# One hot encoding for low cardinality feature + Brand
+col_to_encode = ['Location', 'Fuel_Type', 'Brand']
+oh_encoder = ce.OneHotEncoder(cols=col_to_encode,
+                              use_cat_names=True)
+oh_encoder.fit(X_train)
 
 # Encoding train set
-X_train = target_encoder.transform(X_train)
+X_train = oh_encoder.transform(X_train)
 # Encoding test set
-X_test = target_encoder.transform(X_test)
+X_test = oh_encoder.transform(X_test)
+```
+
+```python
+# Target encoding for high cardinality feature
+col_to_encode = X_train.select_dtypes("object").columns
+encoder = ce.TargetEncoder(cols=col_to_encode)
+encoder.fit(X_train, y_train)
+
+# Encoding train set
+X_train = encoder.transform(X_train)
+# Encoding test set
+X_test = encoder.transform(X_test)
 ```
 
 <!-- #region id="bw10NXJkIuLs" -->
@@ -112,111 +129,32 @@ X_test = target_encoder.transform(X_test)
 corr_price = X_train.join(y_train).corr()['Price']
 index = corr_price[(corr_price < -0.20) | (corr_price > 0.20)].index
 
-X_train_selected = X_train[index[:-1]]
-X_test_selected = X_test[index[:-1]]
-```
-
-```python
-X_train.shape
-```
-
-```python
-X_train_selected.shape
+X_train =  X_train[index[:-1]]
+X_test = X_test[index[:-1]]
 ```
 
 <!-- #region id="wV2sjkqEZIup" -->
 # Modeling
 <!-- #endregion -->
 
-<!-- #region id="4g_nWqotKl6_" -->
-## Functions
-<!-- #endregion -->
-
-```python execution={"iopub.execute_input": "2020-10-08T14:26:01.181734Z", "iopub.status.busy": "2020-10-08T14:26:01.181734Z", "iopub.status.idle": "2020-10-08T14:26:01.202651Z", "shell.execute_reply": "2020-10-08T14:26:01.201684Z", "shell.execute_reply.started": "2020-10-08T14:26:01.181734Z"} id="Qp4QHIuFZIuq"
-def get_cv_score(models, X_train, y_train):
-    
-    cv = KFold(n_splits=5, shuffle=True, random_state=0)
-    summary = []
-    for label, model in models.items():
-        cv_results = cross_validate(model, X_train, y_train, cv=cv, 
-                                    scoring=['r2',
-                                             'neg_root_mean_squared_error',
-                                             'neg_mean_absolute_error'])
-        
-        temp = pd.DataFrame(cv_results).copy()
-        temp['Model'] = label
-        summary.append(temp)
-    
-    summary = pd.concat(summary)
-    summary = summary.groupby('Model').mean()
-    
-    summary.drop(columns=['fit_time', 'score_time'], inplace=True)
-    summary.columns = ['CV R2', 'CV RMSE', 'CV MAE']
-    summary[['CV RMSE', 'CV MAE']] = summary[['CV RMSE', 'CV MAE']] * -1
-    
-    return summary
-```
-
-```python execution={"iopub.execute_input": "2020-10-08T14:26:01.236560Z", "iopub.status.busy": "2020-10-08T14:26:01.235563Z", "iopub.status.idle": "2020-10-08T14:26:01.249526Z", "shell.execute_reply": "2020-10-08T14:26:01.248529Z", "shell.execute_reply.started": "2020-10-08T14:26:01.236560Z"} id="BXEr8F5VZIu0"
-def evaluate_model(models, X_train, X_test, y_train, y_test):
-
-    summary = {'Model':[], 'Train R2':[], 'Train RMSE':[], 'Train MAE':[],
-               'Test R2':[], 'Test RMSE':[], 'Test MAE':[]}
-
-    for label, model in models.items():
-        model.fit(X_train, y_train)
-
-        y_train_pred = model.predict(X_train)
-        y_test_pred = model.predict(X_test)
-
-        summary['Model'].append(label)
-
-        summary['Train R2'].append(
-            metrics.r2_score(y_train, y_train_pred))
-        summary['Train RMSE'].append(
-            np.sqrt(metrics.mean_squared_error(y_train, y_train_pred)))
-        summary['Train MAE'].append(
-            metrics.mean_absolute_error(y_train, y_train_pred))
-
-        summary['Test R2'].append(
-            metrics.r2_score(y_test, y_test_pred))
-        summary['Test RMSE'].append(
-            np.sqrt(metrics.mean_squared_error(y_test, y_test_pred)))
-        summary['Test MAE'].append(
-            metrics.mean_absolute_error(y_test, y_test_pred))
-    
-    summary = pd.DataFrame(summary)
-    summary.set_index('Model', inplace=True)
-
-    cv_scores = get_cv_score(models, X_train, y_train)
-    summary = summary.join(cv_scores)
-    summary = summary[['Train R2', 'CV R2', 'Test R2',
-                       'Train RMSE', 'CV RMSE', 'Test RMSE',
-                       'Train MAE', 'CV MAE', 'Test MAE']]
-    
-    return round(summary.sort_values(by='Test RMSE'), 4)
-```
-
-<!-- #region id="aR4Sp3UCZIu2" -->
-## Base Model
-<!-- #endregion -->
-
 ```python execution={"iopub.execute_input": "2020-10-08T15:10:17.976797Z", "iopub.status.busy": "2020-10-08T15:10:17.975799Z", "iopub.status.idle": "2020-10-08T15:10:17.988765Z", "shell.execute_reply": "2020-10-08T15:10:17.987767Z", "shell.execute_reply.started": "2020-10-08T15:10:17.976797Z"} id="Oux2OxeDZIu2"
 tree_model = DecisionTreeRegressor()
 rf_model = RandomForestRegressor()
-xgb_model = XGBRegressor(objective='reg:squarederror')
+xgb_model = XGBRegressor()
 lgb_model = LGBMRegressor()
 cat_model = CatBoostRegressor(silent=True)
 lr_model = LinearRegression()
 lasso_model = Lasso()
+ridge_model = Ridge()
 
-models = {'DecisionTreeRegressor' : tree_model,
-          'RandomForestRegressor' : rf_model,
-          'XGBRegressor' : xgb_model,
-          'CatBoostRegressor' : cat_model,
-          'LGBMRegressor' : lgb_model,
-          'LinearRegression': lr_model,
-          'LassoRegression': lasso_model}
+models = {'DecisionTree' : tree_model,
+          'RandomForest' : rf_model,
+          'XGBoost' : xgb_model,
+          'CatBoost' : cat_model,
+          'LightGBM' : lgb_model,
+          'Linear': lr_model,
+          'Lasso': lasso_model,
+          'Ridge': ridge_model}
 ```
 
 <!-- #region id="kCSEOF35MoSB" -->
@@ -225,7 +163,7 @@ models = {'DecisionTreeRegressor' : tree_model,
 
 ```python colab={"base_uri": "https://localhost:8080/", "height": 297} executionInfo={"elapsed": 38364, "status": "ok", "timestamp": 1602353945658, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="DgfsmUm-HqGG" outputId="890d1059-fe50-4ed7-87d9-16413c775534"
 # evaluasi model memakai function
-unscaled = evaluate_model(models, X_train_selected, X_test_selected, y_train, y_test)
+unscaled = evaluate_model(models, X_train, X_test, y_train, y_test)
 ```
 
 <!-- #region id="AodaQJBNMtob" -->
@@ -233,18 +171,18 @@ unscaled = evaluate_model(models, X_train_selected, X_test_selected, y_train, y_
 <!-- #endregion -->
 
 ```python id="2lQZQbORMwYB"
-# Scaling data with RobustScaler
+# Scaling data
 from sklearn.preprocessing import RobustScaler
 
 scaler = RobustScaler()
-scaler.fit(X_train_selected)
-X_train_selected_scaled_r = scaler.transform(X_train_selected)
-X_test_selected_scaled_r = scaler.transform(X_test_selected)
+scaler.fit(X_train)
+X_train_scaled = scaler.transform(X_train)
+X_test_scaled = scaler.transform(X_test)
 ```
 
 ```python colab={"base_uri": "https://localhost:8080/", "height": 297} executionInfo={"elapsed": 81010, "status": "ok", "timestamp": 1602353988430, "user": {"displayName": "Abdillah Fikri", "photoUrl": "", "userId": "04470220666512949031"}, "user_tz": -420} id="58C87fQHNRII" outputId="90af7df3-a745-4722-d77d-53f144212a91"
 # evaluasi model memakai function
-scaled = evaluate_model(models, X_train_selected_scaled_r, X_test_selected_scaled_r, y_train, y_test)
+scaled = evaluate_model(models, X_train_scaled, X_test_scaled, y_train, y_test)
 ```
 
 ### Summarizing
