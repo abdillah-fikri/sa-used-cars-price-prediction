@@ -1,15 +1,17 @@
-Model,Train R2,CV R2,Test R2,Train RMSE,CV RMSE,Test RMSE,Train MAE,CV MAE,Test MAE,Dataset Version
-LGBMRegressor,0.9661,0.9104,0.9086,2.0413,3.3043,3.4511,0.8994,1.2858,1.2924,imputed + selected + unscaled
-CatBoostRegressor,0.9899,0.9173,0.9067,1.1141,3.1805,3.4867,0.7171,1.2311,1.257,imputed + selected + unscaled
-RandomForestRegressor,0.9863,0.9026,0.8869,1.2946,3.4454,3.8384,0.5312,1.3585,1.4156,imputed + selected + unscaled
-XGBRegressor,0.9954,0.9068,0.8835,0.7494,3.3722,3.8962,0.4892,1.2957,1.3519,imputed + selected + unscaled
-DecisionTreeRegressor,0.999,0.8326,0.8724,0.3581,4.4707,4.0778,0.0962,1.7618,1.7258,imputed + selected + unscaled
-LinearRegression,0.7975,0.7947,0.777,4.9863,5.0119,5.3902,2.7136,2.7292,2.8814,imputed + selected + unscaled
-LassoRegression,0.7948,0.7925,0.7761,5.0194,5.0399,5.4014,2.6484,2.6638,2.8202,imputed + selected + unscaled
-LGBMRegressor,0.9662,0.912,0.9081,2.0369,3.2726,3.4609,0.8997,1.2751,1.301,imputed + selected + scaled
-CatBoostRegressor,0.9899,0.9173,0.9067,1.1141,3.1805,3.4867,0.7171,1.2311,1.2569,imputed + selected + scaled
-RandomForestRegressor,0.9865,0.9074,0.8898,1.287,3.3634,3.7887,0.5284,1.3512,1.4073,imputed + selected + scaled
-XGBRegressor,0.9954,0.9068,0.8835,0.7494,3.3722,3.8963,0.4892,1.2957,1.3522,imputed + selected + scaled
-DecisionTreeRegressor,0.999,0.8355,0.8666,0.3581,4.4287,4.1692,0.0962,1.751,1.7691,imputed + selected + scaled
-LinearRegression,0.7975,0.7947,0.777,4.9863,5.0119,5.3902,2.7136,2.7292,2.8814,imputed + selected + scaled
-LassoRegression,0.7579,0.7542,0.7228,5.4523,5.4843,6.0104,2.6109,2.6347,2.8508,imputed + selected + scaled
+Model,Fit Time,Train R2,CV R2,Test R2,Train RMSE,CV RMSE,Test RMSE,Dataset Version
+CatBoost,4.4212,0.9803,0.9059,0.9057,1.5538,3.3953,3.5062,imputed + selected + unscaled
+RandomForest,1.6037,0.9783,0.9004,0.8939,1.631,3.4909,3.719,imputed + selected + unscaled
+LightGBM,0.2435,0.9566,0.9004,0.9056,2.309,3.4919,3.5076,imputed + selected + unscaled
+XGBoost,0.2284,0.9872,0.8853,0.8906,1.2551,3.7395,3.7757,imputed + selected + unscaled
+DecisionTree,0.0319,0.9907,0.8215,0.8744,1.0684,4.6599,4.0463,imputed + selected + unscaled
+Ridge,0.0042,0.7997,0.7955,0.7687,4.9586,5.001,5.49,imputed + selected + unscaled
+Linear,0.0106,0.7997,0.7955,0.7679,4.9583,5.0015,5.4995,imputed + selected + unscaled
+Lasso,0.0076,0.7914,0.7901,0.776,5.06,5.0671,5.4023,imputed + selected + unscaled
+CatBoost,3.9989,0.9803,0.9059,0.9057,1.5538,3.3953,3.5062,imputed + selected + scaled
+RandomForest,1.5744,0.9781,0.9006,0.8912,1.6414,3.4878,3.7649,imputed + selected + scaled
+LightGBM,0.2416,0.9564,0.8994,0.9036,2.3133,3.5081,3.5438,imputed + selected + scaled
+XGBoost,0.2515,0.9872,0.8854,0.8906,1.2551,3.7382,3.7757,imputed + selected + scaled
+DecisionTree,0.0291,0.9907,0.8152,0.8649,1.0684,4.7185,4.1959,imputed + selected + scaled
+Ridge,0.0022,0.7997,0.7955,0.7687,4.9586,5.0009,5.4902,imputed + selected + scaled
+Linear,0.0048,0.7997,0.7955,0.7679,4.9583,5.0015,5.4995,imputed + selected + scaled
+Lasso,0.0048,0.7567,0.7541,0.7271,5.465,5.4809,5.9639,imputed + selected + scaled

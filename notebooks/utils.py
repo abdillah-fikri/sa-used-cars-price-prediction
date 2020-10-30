@@ -1,6 +1,14 @@
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.model_selection import (
+    train_test_split,
+    cross_val_score,
+    cross_validate,
+    KFold,
+)
+from sklearn import metrics
 
 
 def null_checker(df, sort=True, ascending=False):
@@ -110,3 +118,79 @@ def countplot_annot_hue(
                 "{0:.0%}".format(height_r / total),
                 ha="center",
             )
+
+
+def get_cv_score(models, X_train, y_train):
+
+    cv = KFold(n_splits=5, shuffle=True, random_state=0)
+    summary = []
+    for label, model in models.items():
+        cv_results = cross_validate(
+            model,
+            X_train,
+            y_train,
+            cv=cv,
+            scoring=["r2", "neg_root_mean_squared_error"],
+        )
+
+        temp = pd.DataFrame(cv_results).copy()
+        temp["Model"] = label
+        summary.append(temp)
+
+    summary = pd.concat(summary)
+    summary = summary.groupby("Model").mean()
+
+    summary.drop(columns=["score_time"], inplace=True)
+    summary.columns = ["Fit Time", "CV R2", "CV RMSE"]
+    summary[["CV RMSE"]] = summary[["CV RMSE"]] * -1
+
+    return summary
+
+
+def evaluate_model(models, X_train, X_test, y_train, y_test):
+
+    summary = {
+        "Model": [],
+        "Train R2": [],
+        "Train RMSE": [],
+        "Test R2": [],
+        "Test RMSE": [],
+    }
+
+    for label, model in models.items():
+        model.fit(X_train, y_train)
+
+        y_train_pred = model.predict(X_train)
+        y_test_pred = model.predict(X_test)
+
+        summary["Model"].append(label)
+
+        summary["Train R2"].append(metrics.r2_score(y_train, y_train_pred))
+        summary["Train RMSE"].append(
+            np.sqrt(metrics.mean_squared_error(y_train, y_train_pred))
+        )
+
+        summary["Test R2"].append(metrics.r2_score(y_test, y_test_pred))
+        summary["Test RMSE"].append(
+            np.sqrt(metrics.mean_squared_error(y_test, y_test_pred))
+        )
+
+    summary = pd.DataFrame(summary)
+    summary.set_index("Model", inplace=True)
+
+    cv_scores = get_cv_score(models, X_train, y_train)
+    summary = summary.join(cv_scores)
+    summary = summary[
+        [
+            "Fit Time",
+            "Train R2",
+            "CV R2",
+            "Test R2",
+            "Train RMSE",
+            "CV RMSE",
+            "Test RMSE",
+        ]
+    ]
+
+    return round(summary.sort_values(by="CV RMSE"), 4)
+
