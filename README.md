@@ -33,11 +33,11 @@ This project is done in a team with members:
    
     * data_prep: Data preparation before visualization
     * data_vis: Data visualization and analysis
-    * preprocessing: Preprocessing of data before modeling such as train test splits, missing values and outlier handling, categorical encoding, feature engineering, etc.
-    * modeling: Model making
+    * modeling_* : Base model preprocessing and modeling
+    * tuning_* : Add feature enginering and Hyperparamater tuning
    
 4. Outputs <br>
-    Contains model result in * .pkl format
+    Contains of visualization output
    
 5. Scripts <br>
     Contains python script version of notebooks
