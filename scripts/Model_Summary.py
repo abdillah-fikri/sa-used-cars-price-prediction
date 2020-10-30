@@ -30,15 +30,12 @@ ver3 = pd.read_csv('../data/processed/summary_imputed_all.csv')
 ver4 = pd.read_csv('../data/processed/summary_imputed_selected.csv')
 
 df_all_ver = pd.concat([ver1, ver2, ver3, ver4], axis=0)
-df_all_ver.sort_values(by='Test RMSE', inplace=True)
+df_all_ver.sort_values(by='CV RMSE', inplace=True)
 df_all_ver = round(df_all_ver, 3)
-df_all_ver.head()
+df_all_ver.head(10)
 
 # %% cell_id="00002-fda41ab5-1578-4759-95fd-34bbab934939" execution_millis=82 execution_start=1602829944018 output_cleared=false source_hash="a46fdaaf"
 df_all_ver['Dataset Version'].unique()
-
-# %%
-df_all_ver["Model"] = df_all_ver["Model"].str.replace("Regressor", "")
 
 # %% cell_id="00003-7d415f67-fe9a-4bb4-9bee-fa5d53ac3de1" execution_millis=115 execution_start=1602852201510 output_cleared=false source_hash="69479740" tags=[]
 grouped = df_all_ver.groupby(['Model'], as_index=False)[['Train RMSE', 'CV RMSE', 'Test RMSE']].mean()
@@ -85,7 +82,11 @@ fig = px.bar(
     barmode='group', category_orders=order_all, text='Test RMSE'
 )
 
-fig.update_layout(title='RMSE Score on Test Set')
+fig.update_layout(
+    title='RMSE Score on Test Set', 
+    height=500,
+    width=1200
+)
 
 fig.show()
 
