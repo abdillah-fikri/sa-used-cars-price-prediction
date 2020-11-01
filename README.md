@@ -34,7 +34,7 @@ This project is done in a team with members:
     * data_prep: Data preparation before visualization
     * data_vis: Data visualization and analysis
     * modeling_* : Base model preprocessing and modeling
-    * tuning_* : Add feature enginering and Hyperparamater tuning
+    * tuning_* : Feature enginering and Hyperparamater tuning
    
 4. Outputs <br>
     Contains of visualization output
