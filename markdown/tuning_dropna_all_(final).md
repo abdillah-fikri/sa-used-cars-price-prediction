@@ -32,7 +32,7 @@ from lightgbm import LGBMRegressor
 ```
 
 ```python colab={"base_uri": "https://localhost:8080/", "height": 204} id="uOHFykGLHlTs" outputId="800ad260-330c-44bc-8f2e-3b4bbf437b80"
-df = pd.read_csv('after_prep.csv')
+df = pd.read_csv('../data/processed/after_prep.csv')
 df.head()
 ```
 
@@ -406,7 +406,7 @@ xgb_result
 ```
 
 ```python id="SCciIDdwdDd8"
-xgb_result.to_csv("tuning_dropna_all (XGB).csv", index=False)
+xgb_result.to_csv("../data/processed/tuning_dropna_all (XGB).csv", index=False)
 ```
 
 <!-- #region id="Cp5UE4lbMZf1" -->
@@ -692,7 +692,7 @@ lgb_result
 ```
 
 ```python id="yALoggpxMZg4"
-lgb_result.to_csv("tuning_dropna_all (LGB).csv", index=False)
+lgb_result.to_csv("../data/processed/tuning_dropna_all (LGB).csv", index=False)
 ```
 
 <!-- #region id="ke3wHorVbjZ4" -->
@@ -702,7 +702,7 @@ lgb_result.to_csv("tuning_dropna_all (LGB).csv", index=False)
 ```python id="EGQKeyKQZilg"
 combined_result = pd.concat([xgb_result, lgb_result], axis=0)
 combined_result.sort_values(by='CV RMSE', inplace=True)
-combined_result.to_csv("tuning_dropna_all (XGB+LGB).csv", index=True)
+combined_result.to_csv("../data/processed/tuning_dropna_all (XGB+LGB).csv", index=True)
 ```
 
 ```python id="Mo853cR-cIPU"

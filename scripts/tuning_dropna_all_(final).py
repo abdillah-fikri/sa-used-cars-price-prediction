@@ -30,7 +30,7 @@ from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 
 # %% colab={"base_uri": "https://localhost:8080/", "height": 204} id="uOHFykGLHlTs" outputId="800ad260-330c-44bc-8f2e-3b4bbf437b80"
-df = pd.read_csv('after_prep.csv')
+df = pd.read_csv('../data/processed/after_prep.csv')
 df.head()
 
 # %% colab={"base_uri": "https://localhost:8080/"} id="Q7_R-5ZmHlTx" outputId="c8adec21-7910-4979-fb09-f297e2612267"
@@ -375,7 +375,7 @@ xgb_result = evaluate_model(xgb_models, X_train, X_test, y_train, y_test)
 xgb_result
 
 # %% id="SCciIDdwdDd8"
-xgb_result.to_csv("tuning_dropna_all (XGB).csv", index=False)
+xgb_result.to_csv("../data/processed/tuning_dropna_all (XGB).csv", index=False)
 
 
 # %% [markdown] id="Cp5UE4lbMZf1"
@@ -645,7 +645,7 @@ lgb_result = evaluate_model(lgb_models, X_train, X_test, y_train, y_test)
 lgb_result
 
 # %% id="yALoggpxMZg4"
-lgb_result.to_csv("tuning_dropna_all (LGB).csv", index=False)
+lgb_result.to_csv("../data/processed/tuning_dropna_all (LGB).csv", index=False)
 
 # %% [markdown] id="ke3wHorVbjZ4"
 # ## Combine Result
@@ -653,6 +653,6 @@ lgb_result.to_csv("tuning_dropna_all (LGB).csv", index=False)
 # %% id="EGQKeyKQZilg"
 combined_result = pd.concat([xgb_result, lgb_result], axis=0)
 combined_result.sort_values(by='CV RMSE', inplace=True)
-combined_result.to_csv("tuning_dropna_all (XGB+LGB).csv", index=True)
+combined_result.to_csv("../data/processed/tuning_dropna_all (XGB+LGB).csv", index=True)
 
 # %% id="Mo853cR-cIPU"

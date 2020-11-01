@@ -15,7 +15,7 @@
 # %% [markdown] id="IN1jfOnfZIqT"
 # # Data Importing
 
-# %% cell_id="00035-adb3a37b-199a-4d0e-ba89-ea8c10843673" execution={"iopub.execute_input": "2020-10-13T13:29:52.833962Z", "iopub.status.busy": "2020-10-13T13:29:52.833962Z", "iopub.status.idle": "2020-10-13T13:29:52.864878Z", "shell.execute_reply": "2020-10-13T13:29:52.863881Z", "shell.execute_reply.started": "2020-10-13T13:29:52.833962Z"} id="bKob_zWgIakl" output_cleared=false tags=[] outputId="cab68c39-a4f2-4aaf-8ecc-d438b5cfbf9b" colab={"base_uri": "https://localhost:8080/"}
+# %% cell_id="00035-adb3a37b-199a-4d0e-ba89-ea8c10843673" colab={"base_uri": "https://localhost:8080/"} execution={"iopub.execute_input": "2020-10-13T13:29:52.833962Z", "iopub.status.busy": "2020-10-13T13:29:52.833962Z", "iopub.status.idle": "2020-10-13T13:29:52.864878Z", "shell.execute_reply": "2020-10-13T13:29:52.863881Z", "shell.execute_reply.started": "2020-10-13T13:29:52.833962Z"} id="bKob_zWgIakl" outputId="cab68c39-a4f2-4aaf-8ecc-d438b5cfbf9b" output_cleared=false tags=[]
 import numpy as np
 import pandas as pd
 import category_encoders as ce
@@ -29,17 +29,17 @@ from sklearn.model_selection import train_test_split, KFold
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 
-# %% id="uOHFykGLHlTs" outputId="673b902e-d3d9-4956-ff8c-37a9a1c072c3" colab={"base_uri": "https://localhost:8080/", "height": 204}
-df = pd.read_csv('after_prep.csv')
+# %% colab={"base_uri": "https://localhost:8080/", "height": 204} id="uOHFykGLHlTs" outputId="673b902e-d3d9-4956-ff8c-37a9a1c072c3"
+df = pd.read_csv('../data/processed/after_prep.csv')
 df.head()
 
-# %% id="Q7_R-5ZmHlTx" outputId="6c7d649a-4703-4977-d31b-6d3be82db63c" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="Q7_R-5ZmHlTx" outputId="6c7d649a-4703-4977-d31b-6d3be82db63c"
 df.info()
 
 # %% [markdown] id="g1GS1AAUZIt9"
 # # Preprocessing
 
-# %% execution={"iopub.execute_input": "2020-10-13T13:29:52.867870Z", "iopub.status.busy": "2020-10-13T13:29:52.866875Z", "iopub.status.idle": "2020-10-13T13:29:52.879124Z", "shell.execute_reply": "2020-10-13T13:29:52.879124Z", "shell.execute_reply.started": "2020-10-13T13:29:52.867870Z"} id="INV8VvOYZItN" outputId="3cb119d1-6004-45d6-dc0c-ffa16220679e" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} execution={"iopub.execute_input": "2020-10-13T13:29:52.867870Z", "iopub.status.busy": "2020-10-13T13:29:52.866875Z", "iopub.status.idle": "2020-10-13T13:29:52.879124Z", "shell.execute_reply": "2020-10-13T13:29:52.879124Z", "shell.execute_reply.started": "2020-10-13T13:29:52.867870Z"} id="INV8VvOYZItN" outputId="3cb119d1-6004-45d6-dc0c-ffa16220679e"
 # Delete outlier
 df = df[~(df.Kilometers_Driven > 1e6)]
 df.shape
@@ -84,7 +84,7 @@ X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=
 # %% [markdown] id="oxqsMHrKZIuA"
 # ## Encoding
 
-# %% cell_id="00036-c7e04c20-9ab9-48dc-a699-9e7a06582a8c" execution={"iopub.execute_input": "2020-10-13T13:29:52.928873Z", "iopub.status.busy": "2020-10-13T13:29:52.927872Z", "iopub.status.idle": "2020-10-13T13:29:53.107446Z", "shell.execute_reply": "2020-10-13T13:29:53.106483Z", "shell.execute_reply.started": "2020-10-13T13:29:52.928873Z"} id="_0criLnZIakn" output_cleared=false tags=[] outputId="664fb5de-971a-4f5c-e353-cf0802ed6e1c" colab={"base_uri": "https://localhost:8080/"}
+# %% cell_id="00036-c7e04c20-9ab9-48dc-a699-9e7a06582a8c" colab={"base_uri": "https://localhost:8080/"} execution={"iopub.execute_input": "2020-10-13T13:29:52.928873Z", "iopub.status.busy": "2020-10-13T13:29:52.927872Z", "iopub.status.idle": "2020-10-13T13:29:53.107446Z", "shell.execute_reply": "2020-10-13T13:29:53.106483Z", "shell.execute_reply.started": "2020-10-13T13:29:52.928873Z"} id="_0criLnZIakn" outputId="664fb5de-971a-4f5c-e353-cf0802ed6e1c" output_cleared=false tags=[]
 # One hot encoding
 col_to_encode = ['Location', 'Fuel_Type', 'Transmission', 'Owner_Type', 'Brand']
 oh_encoder = ce.OneHotEncoder(cols=col_to_encode,
@@ -96,7 +96,7 @@ X_train = oh_encoder.transform(X_train)
 # Encoding test set
 X_test = oh_encoder.transform(X_test)
 
-# %% id="w_QmQ1-COIRX" outputId="01369227-5f56-4712-f8e9-334e9808a0f1" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="w_QmQ1-COIRX" outputId="01369227-5f56-4712-f8e9-334e9808a0f1"
 # Target Encoding
 col_to_encode = ['Series', 'Type']
 encoder = ce.TargetEncoder(cols=col_to_encode)
@@ -142,7 +142,7 @@ X_test = new_data.complete_data()
 # %% [markdown] id="PzcpvsXbjHs3"
 # #### Study 1
 
-# %% id="qwWoTc--ImFJ" outputId="21c9bb49-0ae2-4d2e-98ec-4223db73e607" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="qwWoTc--ImFJ" outputId="21c9bb49-0ae2-4d2e-98ec-4223db73e607"
 def objective(trial):
 
     dtrain = xgb.DMatrix(X_train, label=y_train)
@@ -188,7 +188,7 @@ print("  Params: ")
 for key, value in trial.params.items():
     print("    {}: {}".format(key, value))
 
-# %% id="NsHKTHFSIm49" outputId="713fa8e7-5178-4374-8f54-34324ac8c379" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="NsHKTHFSIm49" outputId="713fa8e7-5178-4374-8f54-34324ac8c379"
 # Get best params then add to param_1
 xgb_study_1_params = study.best_params
 xgb_param_1 = {
@@ -199,7 +199,7 @@ xgb_param_1 = {
 xgb_param_1.update(xgb_study_1_params)
 xgb_param_1
 
-# %% id="yWR-ZmE3WxaI" outputId="cab31409-7b46-499e-9791-23fd2d47b12d" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="yWR-ZmE3WxaI" outputId="cab31409-7b46-499e-9791-23fd2d47b12d"
 dtrain = xgb.DMatrix(X_train, label=y_train)
 dtest = xgb.DMatrix(X_test, label=y_test)
 
@@ -222,7 +222,7 @@ xgb_n_estimators_1
 # %% [markdown] id="MQ-p-_ykjMF0"
 # #### Study 2
 
-# %% id="MzSy2WLUNqhN" outputId="42a4a3c2-66d5-4d43-8a91-1d56e880f1a4" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="MzSy2WLUNqhN" outputId="42a4a3c2-66d5-4d43-8a91-1d56e880f1a4"
 def objective(trial):
 
     dtrain = xgb.DMatrix(X_train, label=y_train)
@@ -268,7 +268,7 @@ print("  Params: ")
 for key, value in trial.params.items():
     print("    {}: {}".format(key, value))
 
-# %% id="ggqbIf3UNqYX" outputId="9a0e34d7-0f5d-484a-ab01-708626c3ab5e" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="ggqbIf3UNqYX" outputId="9a0e34d7-0f5d-484a-ab01-708626c3ab5e"
 # Get best params then add to param_2
 xgb_study_2_params = study.best_params
 xgb_param_2 = {
@@ -279,7 +279,7 @@ xgb_param_2 = {
 xgb_param_2.update(xgb_study_2_params)
 xgb_param_2
 
-# %% id="C1CGZcryWz4x" outputId="0f677d82-5093-4743-8e96-29a54b4d6b72" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="C1CGZcryWz4x" outputId="0f677d82-5093-4743-8e96-29a54b4d6b72"
 dtrain = xgb.DMatrix(X_train, label=y_train)
 dtest = xgb.DMatrix(X_test, label=y_test)
 
@@ -301,7 +301,7 @@ xgb_n_estimators_2
 # %% [markdown] id="46Vnrg0cjRio"
 # #### Evaluation
 
-# %% id="z3T7iSxoaUPA" outputId="829b8b9d-e0e5-40ff-a6e1-6dfb9e214deb" colab={"base_uri": "https://localhost:8080/", "height": 227}
+# %% colab={"base_uri": "https://localhost:8080/", "height": 227} id="z3T7iSxoaUPA" outputId="829b8b9d-e0e5-40ff-a6e1-6dfb9e214deb"
 xgb_study_1 = XGBRegressor(**xgb_param_1, n_estimators=xgb_n_estimators_1)
 xgb_study_2 = XGBRegressor(**xgb_param_2, n_estimators=xgb_n_estimators_2)
 
@@ -315,7 +315,7 @@ evaluate_model(xgb_models, X_train, X_test, y_train, y_test)
 # %% [markdown] id="0SoMHIJlYBFk"
 # #### Study 3
 
-# %% id="a2gYuFxmYBF4" outputId="46f3d28a-393b-4680-df64-8418c6fe05e0" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="a2gYuFxmYBF4" outputId="46f3d28a-393b-4680-df64-8418c6fe05e0"
 def objective(trial):
 
     dtrain = xgb.DMatrix(X_train, label=y_train)
@@ -350,13 +350,13 @@ print("  Params: ")
 for key, value in trial.params.items():
     print("    {}: {}".format(key, value))
 
-# %% id="Dp9QnijQYBGD" outputId="368e32f8-c8b3-4a41-89bf-570de113fcd2" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="Dp9QnijQYBGD" outputId="368e32f8-c8b3-4a41-89bf-570de113fcd2"
 # Get best params then add to param_3
 xgb_param_3 = xgb_param_2.copy()
 xgb_param_3["learning_rate"] = study.best_params["learning_rate"]
 xgb_param_3
 
-# %% id="H03n4RSjYBGH" outputId="d895284b-b434-4358-f27b-d970b88f3243" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="H03n4RSjYBGH" outputId="d895284b-b434-4358-f27b-d970b88f3243"
 dtrain = xgb.DMatrix(X_train, label=y_train)
 dtest = xgb.DMatrix(X_test, label=y_test)
 
@@ -378,7 +378,7 @@ xgb_n_estimators_3
 # %% [markdown] id="ty69r92GYXtx"
 # #### Evaluation
 
-# %% id="bQp80jXaYXuG" outputId="67a816fd-909c-4e24-e931-3c0ea696fd46" colab={"base_uri": "https://localhost:8080/", "height": 292}
+# %% colab={"base_uri": "https://localhost:8080/", "height": 292} id="bQp80jXaYXuG" outputId="67a816fd-909c-4e24-e931-3c0ea696fd46"
 xgb_study_1 = XGBRegressor(**xgb_param_1, n_estimators=xgb_n_estimators_1)
 xgb_study_2 = XGBRegressor(**xgb_param_2, n_estimators=xgb_n_estimators_2)
 xgb_study_3 = XGBRegressor(**xgb_param_3, n_estimators=xgb_n_estimators_3)
@@ -392,7 +392,7 @@ xgb_result = evaluate_model(xgb_models, X_train, X_test, y_train, y_test)
 xgb_result
 
 # %% id="SCciIDdwdDd8"
-xgb_result.to_csv("tuning_imputed_all (XGB).csv", index=False)
+xgb_result.to_csv("../data/processed/tuning_imputed_all (XGB).csv", index=False)
 
 
 # %% [markdown] id="Cp5UE4lbMZf1"
@@ -401,7 +401,7 @@ xgb_result.to_csv("tuning_imputed_all (XGB).csv", index=False)
 # %% [markdown] id="YMGLpL8nMZgJ"
 # #### Study 1
 
-# %% id="_DBuAfcmMZgK" outputId="981ce043-a99c-4e29-9295-9c13a728de0a" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="_DBuAfcmMZgK" outputId="981ce043-a99c-4e29-9295-9c13a728de0a"
 def objective(trial):
 
     dtrain = lgb.Dataset(X_train, label=y_train)
@@ -450,7 +450,7 @@ print("  Params: ")
 for key, value in trial.params.items():
     print("    {}: {}".format(key, value))
 
-# %% id="w-RaxMEsMZgS" outputId="f869abbb-0939-4121-cc46-f7e62aa47881" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="w-RaxMEsMZgS" outputId="f869abbb-0939-4121-cc46-f7e62aa47881"
 # Get best params then add to param_1
 lgb_study_1_params = study.best_params
 lgb_param_1 = {
@@ -462,7 +462,7 @@ lgb_param_1 = {
 lgb_param_1.update(lgb_study_1_params)
 lgb_param_1
 
-# %% id="kY2PHvvqMZgW" outputId="1d02486f-cc45-4228-e427-6aa904d16e13" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="kY2PHvvqMZgW" outputId="1d02486f-cc45-4228-e427-6aa904d16e13"
 dtrain = lgb.Dataset(X_train, label=y_train)
 
 cv = KFold(
@@ -484,7 +484,7 @@ lgb_n_estimators_1
 # %% [markdown] id="8m8NA4IEMZgZ"
 # #### Study 2
 
-# %% id="5ofs6sGjMZgb" outputId="b5de9e48-8a13-4150-ee0f-4265b20f3433" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="5ofs6sGjMZgb" outputId="b5de9e48-8a13-4150-ee0f-4265b20f3433"
 def objective(trial):
 
     dtrain = lgb.Dataset(X_train, label=y_train)
@@ -533,7 +533,7 @@ print("  Params: ")
 for key, value in trial.params.items():
     print("    {}: {}".format(key, value))
 
-# %% id="PEUnEOY2MZgf" outputId="c2e4860e-72a8-4c63-a0bf-4a90d4df7370" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="PEUnEOY2MZgf" outputId="c2e4860e-72a8-4c63-a0bf-4a90d4df7370"
 # Get best params then add to param_2
 lgb_study_2_params = study.best_params
 lgb_param_2 = {
@@ -545,11 +545,11 @@ lgb_param_2 = {
 lgb_param_2.update(lgb_study_2_params)
 lgb_param_2
 
-# %% id="8i-_ufqKIX8O" outputId="84532adb-9e66-4954-920b-465807986d37" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="8i-_ufqKIX8O" outputId="84532adb-9e66-4954-920b-465807986d37"
 lgb_param_2['learning_rate'] = 0.01
 lgb_param_2
 
-# %% id="31_EVr9BMZgi" outputId="df603c1b-0b7a-4a5d-a00e-012254fd3094" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="31_EVr9BMZgi" outputId="df603c1b-0b7a-4a5d-a00e-012254fd3094"
 dtrain = lgb.Dataset(X_train, label=y_train)
 
 cv = KFold(
@@ -570,7 +570,7 @@ lgb_n_estimators_2
 # %% [markdown] id="kdnBKWshMZgl"
 # #### Evaluation
 
-# %% id="L323nvX2MZgm" outputId="0a736a77-f7fd-48cb-cc28-4a6c6b60c7f8" colab={"base_uri": "https://localhost:8080/", "height": 227}
+# %% colab={"base_uri": "https://localhost:8080/", "height": 227} id="L323nvX2MZgm" outputId="0a736a77-f7fd-48cb-cc28-4a6c6b60c7f8"
 lgb_study_1 = LGBMRegressor(**lgb_param_1, n_estimators=lgb_n_estimators_1)
 lgb_study_2 = LGBMRegressor(**lgb_param_2, n_estimators=lgb_n_estimators_2)
 
@@ -584,7 +584,7 @@ evaluate_model(lgb_models, X_train, X_test, y_train, y_test)
 # %% [markdown] id="PMLdn24uMZgq"
 # #### Study 3
 
-# %% id="1yqpJRkqMZgr" outputId="f5484a17-095b-4d46-b369-865b1953c862" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="1yqpJRkqMZgr" outputId="f5484a17-095b-4d46-b369-865b1953c862"
 def objective(trial):
 
     dtrain = lgb.Dataset(X_train, label=y_train)
@@ -621,13 +621,13 @@ print("  Params: ")
 for key, value in trial.params.items():
     print("    {}: {}".format(key, value))
 
-# %% id="hRrJ92p_MZgu" outputId="d6bad2e0-fcb1-4fba-9145-a604bdb5cb87" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="hRrJ92p_MZgu" outputId="d6bad2e0-fcb1-4fba-9145-a604bdb5cb87"
 # Get best params then add to param_3
 lgb_param_3 = lgb_param_2.copy()
 lgb_param_3["learning_rate"] = study.best_params["learning_rate"]
 lgb_param_3
 
-# %% id="kVNd4F6mMZgx" outputId="3aa1f765-3300-4688-b06c-b256823fa149" colab={"base_uri": "https://localhost:8080/"}
+# %% colab={"base_uri": "https://localhost:8080/"} id="kVNd4F6mMZgx" outputId="3aa1f765-3300-4688-b06c-b256823fa149"
 dtrain = lgb.Dataset(X_train, label=y_train)
 
 cv = KFold(
@@ -648,7 +648,7 @@ lgb_n_estimators_3
 # %% [markdown] id="_gJqhWdzMZg0"
 # #### Evaluation
 
-# %% id="Ita98N6JMZg1" outputId="7dd0be9e-f414-4450-f6ae-36152c2a2cb8" colab={"base_uri": "https://localhost:8080/", "height": 292}
+# %% colab={"base_uri": "https://localhost:8080/", "height": 292} id="Ita98N6JMZg1" outputId="7dd0be9e-f414-4450-f6ae-36152c2a2cb8"
 lgb_study_1 = LGBMRegressor(**lgb_param_1, n_estimators=lgb_n_estimators_1)
 lgb_study_2 = LGBMRegressor(**lgb_param_2, n_estimators=lgb_n_estimators_2)
 lgb_study_3 = LGBMRegressor(**lgb_param_3, n_estimators=lgb_n_estimators_3)
@@ -670,6 +670,6 @@ lgb_result.to_csv("tuning_imputed_all (LGB).csv", index=False)
 # %% id="EGQKeyKQZilg"
 combined_result = pd.concat([xgb_result, lgb_result], axis=0)
 combined_result.sort_values(by='CV RMSE', inplace=True)
-combined_result.to_csv("tuning_imputed_all (XGB+LGB).csv", index=True)
+combined_result.to_csv("../data/processed/tuning_imputed_all (XGB+LGB).csv", index=True)
 
 # %% id="Mo853cR-cIPU"
