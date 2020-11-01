@@ -71,6 +71,24 @@ fig.update_layout(
     margin=dict(l=100, r=100, t=100, b=100),
     font_size=17
 )
+fig.add_shape(type="rect",
+    xref="x", yref="y",
+    x0=0.55, y0=0,
+    x1=1.45, y1=3.8,
+    line=dict(
+        color="Red",
+        width=3,
+    ),
+)
+fig.add_shape(type="rect",
+    xref="x", yref="y",
+    x0=4.55, y0=0,
+    x1=7.45, y1=6.1,
+    line=dict(
+        color="Purple",
+        width=3,
+    ),
+)
 fig.show()
 ```
 
@@ -161,37 +179,37 @@ best_10_before
 ```
 
 ```python
-best_10_before = df_all_ver[df_all_ver["Dataset Version"].str.contains("unscaled")].head(5)
-best_10_before["Dataset Version"] = best_10_before["Dataset Version"].apply(replace_ver)
-best_10_before["Model"] = best_10_before["Model"] + " (" + best_10_before["Dataset Version"] + ")"
-best_10_before.drop(columns=["Dataset Version"], inplace=True)
+best_before = df_all_ver[df_all_ver["Dataset Version"].str.contains("unscaled")].head(7)
+best_before["Dataset Version"] = best_before["Dataset Version"].apply(replace_ver)
+best_before["Model"] = best_before["Model"] + " (" + best_before["Dataset Version"] + ")"
+best_before.drop(columns=["Dataset Version"], inplace=True)
 
 fig = go.Figure()
 
 fig.add_trace(go.Bar(
-    x=best_10_before['Model'], y=best_10_before['Train RMSE'],
-    text=best_10_before['Train RMSE'], textposition='auto',
+    x=best_before['Model'], y=best_before['Train RMSE'],
+    text=best_before['Train RMSE'], textposition='auto',
     name='Train RMSE'
 ))
 fig.add_trace(go.Bar(
-    x=best_10_before['Model'], y=best_10_before['CV RMSE'],
-    text=best_10_before['CV RMSE'], textposition='auto',
+    x=best_before['Model'], y=best_before['CV RMSE'],
+    text=best_before['CV RMSE'], textposition='auto',
     name='CV RMSE'
 ))
 fig.add_trace(go.Bar(
-    x=best_10_before['Model'], y=best_10_before['Test RMSE'],
-    text=best_10_before['Test RMSE'], textposition='auto',
+    x=best_before['Model'], y=best_before['Test RMSE'],
+    text=best_before['Test RMSE'], textposition='auto',
     name='Test RMSE'
 ))
 fig.update_layout(
-    title='Best 5 Model\'s RMSE Score',
+    title='Before Tuning',
     xaxis=None,
     yaxis=dict(title='RMSE Score'),
-    height=500,
-    width=600,
-    margin=dict(l=100, r=100, t=100, b=120),
-    font_size=17,
-    
+    height=500*1.2,
+    width=600*1.2,
+    margin=dict(l=100, r=100, t=70, b=120),
+    font_size=15,
+    showlegend=False
 )
 fig.show()
 ```
@@ -200,29 +218,28 @@ fig.show()
 fig = go.Figure()
 
 fig.add_trace(go.Bar(
-    x=best_10_before['Model'], y=best_10_before['Train R2'],
-    text=best_10_before['Train R2'], textposition='auto',
+    x=best_before['Model'], y=best_before['Train R2'],
+    text=best_before['Train R2'], textposition='auto',
     name='Train R2'
 ))
 fig.add_trace(go.Bar(
-    x=best_10_before['Model'], y=best_10_before['CV R2'],
-    text=best_10_before['CV R2'], textposition='auto',
+    x=best_before['Model'], y=best_before['CV R2'],
+    text=best_before['CV R2'], textposition='auto',
     name='CV R2'
 ))
 fig.add_trace(go.Bar(
-    x=best_10_before['Model'], y=best_10_before['Test R2'],
-    text=best_10_before['Test R2'], textposition='auto',
+    x=best_before['Model'], y=best_before['Test R2'],
+    text=best_before['Test R2'], textposition='auto',
     name='Test R2'
 ))
 fig.update_layout(
-    title='Best 5 Model\'s R-Squared Score',
+    title='Before Tuning',
     xaxis=None,
-    yaxis=dict(title='R2 Score'),
-    height=500,
-    width=600,
+    yaxis=dict(title='RMSE Score'),
+    height=500*1.2,
+    width=600*1.2,
     margin=dict(l=100, r=100, t=100, b=120),
-    font_size=17,
-    
+    font_size=15,
 )
 fig.show()
 ```
@@ -230,56 +247,98 @@ fig.show()
 ### After Tuning
 
 ```python
-df_tuned = pd.read_csv("../data/processed/tuning_dropna_all (XGB+LGB).csv")
-df_tuned
+ver1_tuned = pd.read_csv("../data/processed/tuning_dropna_all (XGB+LGB).csv")
+ver1_tuned
 ```
 
 ```python
-df_tuned_top = round(df_tuned.iloc[[0,2]], 3)
-df_tuned_top["Model"] = df_tuned_top["Model"].apply(lambda x: x.split()[0]) + "_Tuned (Ver1)"
-df_tuned_top["Model"] = df_tuned_top["Model"].str.replace("LGBMRegressor", "LightGBM")
-df_tuned_top["Model"] = df_tuned_top["Model"].str.replace("XGBRegressor", "XGBoost")
-df_tuned_top
+ver1_tuned_top = round(ver1_tuned.iloc[[0,2]], 3)
+ver1_tuned_top["Model"] = ver1_tuned_top["Model"].apply(lambda x: x.split()[0]) + "_Tuned (Ver1)"
+ver1_tuned_top["Model"] = ver1_tuned_top["Model"].str.replace("LGBMRegressor", "LightGBM")
+ver1_tuned_top["Model"] = ver1_tuned_top["Model"].str.replace("XGBRegressor", "XGBoost")
+ver1_tuned_top
 ```
 
 ```python
-best_5_after = pd.concat([best_10_before, df_tuned_top], axis=0)
-best_5_after = best_5_after.sort_values(by="CV RMSE").head().reset_index(drop=True)
-best_5_after
+ver2_tuned = pd.read_csv("../data/processed/tuning_imputed_all (XGB+LGB).csv")
+ver2_tuned
 ```
 
 ```python
-pio.templates.default = "plotly"
-pio.templates
+ver2_tuned_top = round(ver2_tuned.iloc[[0,2]], 3)
+ver2_tuned_top["Model"] = ver2_tuned_top["Model"].apply(lambda x: x.split()[0]) + "_Tuned (Ver2)"
+ver2_tuned_top["Model"] = ver2_tuned_top["Model"].str.replace("LGBMRegressor", "LightGBM")
+ver2_tuned_top["Model"] = ver2_tuned_top["Model"].str.replace("XGBRegressor", "XGBoost")
+ver2_tuned_top
+```
+
+```python
+best_after = pd.concat([best_10_before, ver1_tuned_top, ver2_tuned_top], axis=0)
+best_after = best_after.sort_values(by="CV RMSE").head(7).reset_index(drop=True)
+best_after
+```
+
+```python
+print("D3:", px.colors.qualitative.D3)
+print("Plotly:", px.colors.qualitative.Plotly)
+```
+
+```python
+colors1 = ['#636EFA','#636EFA','#636EFA','#636EFA','#636EFA','#636EFA','#636EFA']
+colors2 = ['#EF553B','#EF553B','#EF553B','#EF553B','#EF553B','#EF553B','#EF553B']
+colors3 = ['#00CC96','#00CC96','#00CC96','#00CC96','#00CC96','#00CC96','#00CC96']
 ```
 
 ```python
 fig = go.Figure()
 
 fig.add_trace(go.Bar(
-    x=best_5_after['Model'], y=best_5_after['Train RMSE'],
-    text=best_5_after['Train RMSE'], textposition='auto',
-    name='Train RMSE'
+    x=best_after['Model'], y=best_after['Train RMSE'],
+    text=best_after['Train RMSE'], textposition='auto',
+    name='Train RMSE',
+    #marker_color=colors1
 ))
 fig.add_trace(go.Bar(
-    x=best_5_after['Model'], y=best_5_after['CV RMSE'],
-    text=best_5_after['CV RMSE'], textposition='auto',
-    name='CV RMSE'
+    x=best_after['Model'], y=best_after['CV RMSE'],
+    text=best_after['CV RMSE'], textposition='auto',
+    name='CV RMSE',
+    #marker_color=colors2
 ))
 fig.add_trace(go.Bar(
-    x=best_5_after['Model'], y=best_5_after['Test RMSE'],
-    text=best_5_after['Test RMSE'], textposition='auto',
-    name='Test RMSE'
+    x=best_after['Model'], y=best_after['Test RMSE'],
+    text=best_after['Test RMSE'], textposition='auto',
+    name='Test RMSE',
+    #marker_color=colors3
 ))
 fig.update_layout(
-    title='Best 5 Model\'s RMSE Score',
+    title='After Tuning',
     xaxis=None,
-    yaxis=dict(title='RMSE Score'),
-    height=500,
-    width=600,
-    margin=dict(l=100, r=100, t=100, b=120),
-    font_size=17,
-    
+    yaxis=dict(
+        title=None,
+        range=[0,4]
+    ),
+    height=500*1.2,
+    width=600*1.2,
+    margin=dict(l=70, r=100, t=70, b=120),
+    font_size=15,  
+)
+fig.add_shape(type="rect",
+    xref="x", yref="y",
+    x0=-0.47, y0=0,
+    x1=1.47, y1=3.03,
+    line=dict(
+        color="Red",
+        width=3,
+    ),
+)
+fig.add_shape(type="rect",
+    xref="x", yref="y",
+    x0=2.53, y0=0,
+    x1=4.47, y1=3.5,
+    line=dict(
+        color="Purple",
+        width=3,
+    ),
 )
 fig.show()
 ```
@@ -288,33 +347,105 @@ fig.show()
 fig = go.Figure()
 
 fig.add_trace(go.Bar(
-    x=best_5_after['Model'], y=best_5_after['Train R2'],
-    text=best_5_after['Train R2'], textposition='auto',
+    x=best_after['Model'], y=best_after['Train R2'],
+    text=best_after['Train R2'], textposition='auto',
     name='Train R2'
 ))
 fig.add_trace(go.Bar(
-    x=best_5_after['Model'], y=best_5_after['CV R2'],
-    text=best_5_after['CV R2'], textposition='auto',
+    x=best_after['Model'], y=best_after['CV R2'],
+    text=best_after['CV R2'], textposition='auto',
     name='CV R2'
 ))
 fig.add_trace(go.Bar(
-    x=best_5_after['Model'], y=best_5_after['Test R2'],
-    text=best_5_after['Test R2'], textposition='auto',
+    x=best_after['Model'], y=best_after['Test R2'],
+    text=best_after['Test R2'], textposition='auto',
     name='Test R2'
 ))
 fig.update_layout(
-    title='Best 5 Model\'s R-Squared Score',
+    title='After Tuning',
     xaxis=None,
-    yaxis=dict(title='R2 Score'),
-    height=500,
-    width=600,
-    margin=dict(l=100, r=100, t=100, b=120),
-    font_size=17,
-    
+    yaxis=None,
+    height=500*1.2,
+    width=600*1.2,
+    margin=dict(l=100, r=100, t=70, b=120),
+    font_size=16,  
 )
 fig.show()
 ```
 
 ```python
+final_model = best_after.loc[1]
+final_model = pd.DataFrame(final_model).T
+```
 
+```python
+final_model
+```
+
+```python
+fig = go.Figure()
+
+fig.add_trace(go.Bar(
+    x=final_model['Model'], y=final_model['Train RMSE'],
+    text=final_model['Train RMSE'], textposition='auto',
+    name='Train RMSE',
+    #marker_color=colors1
+))
+fig.add_trace(go.Bar(
+    x=final_model['Model'], y=final_model['CV RMSE'],
+    text=final_model['CV RMSE'], textposition='auto',
+    name='CV RMSE',
+    #marker_color=colors2
+))
+fig.add_trace(go.Bar(
+    x=final_model['Model'], y=final_model['Test RMSE'],
+    text=final_model['Test RMSE'], textposition='auto',
+    name='Test RMSE',
+    #marker_color=colors3
+))
+fig.update_layout(
+    title='RMSE Score',
+    xaxis=None,
+    yaxis=None,
+    height=500*1.2,
+    width=300*1.2,
+    margin=dict(l=70, r=100, t=70, b=120),
+    font_size=15, 
+    showlegend=False
+)
+fig.show()
+```
+
+```python
+fig = go.Figure()
+
+fig.add_trace(go.Bar(
+    x=final_model['Model'], y=final_model['Train R2'],
+    text=final_model['Train R2'], textposition='auto',
+    name='Train R2',
+    #marker_color=colors1
+))
+fig.add_trace(go.Bar(
+    x=final_model['Model'], y=final_model['CV R2'],
+    text=final_model['CV R2'], textposition='auto',
+    name='CV R2',
+    #marker_color=colors2
+))
+fig.add_trace(go.Bar(
+    x=final_model['Model'], y=final_model['Test R2'],
+    text=final_model['Test R2'], textposition='auto',
+    name='Test R2',
+    #marker_color=colors3
+))
+fig.update_layout(
+    title='R-Squared Score',
+    xaxis=None,
+    yaxis=None,
+    height=500*1.2,
+    width=300*1.2,
+    margin=dict(l=70, r=100, t=70, b=120),
+    font_size=15, 
+    showlegend=False
+)
+fig.show()
 ```
